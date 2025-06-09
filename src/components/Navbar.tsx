@@ -1,10 +1,18 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu"
-import { cn } from "@/lib/utils"
+import Link from 'next/link';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
+import Auth from "@/lib/auth-client";
+import { useEffect, useState } from "react";
 
 export function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(Auth.loggedIn());
+  }, []);
+
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -20,24 +28,37 @@ export function Navbar() {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/cart" className={cn("text-sm font-medium hover:underline")}>
-                  Cart
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {isLoggedIn && (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/orders" className={cn("text-sm font-medium hover:underline")}>
+                    Orders
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
 
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/orders" className={cn("text-sm font-medium hover:underline")}>
-                  Orders
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
+            {!isLoggedIn ? (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/auth" className={cn("text-sm font-medium hover:underline")}>
+                    Login / Register
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ) : (
+              <NavigationMenuItem>
+                <button
+                  onClick={() => Auth.logout()}
+                  className={cn("text-sm font-medium hover:underline")}
+                >
+                  Logout
+                </button>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
       </div>
     </header>
-  )
+  );
 }
