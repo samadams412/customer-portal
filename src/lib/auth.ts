@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "dev-secret";
 // ----- JWT Utilities -----
 
 export function signJwt(payload: object): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "2h" });
 }
 
 export function verifyJwt<T>(token: string): T | null {
