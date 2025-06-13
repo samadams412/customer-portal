@@ -19,12 +19,12 @@ This outlines our current progress, project structure, and how we’re going to 
 - [x] Set up Prisma `User` model
 - [x] `/api/register`: Create user
 - [x] `/api/login`: Authenticate and return JWT
-- [ ] `withAuth`: Middleware to protect routes
+- [x] `withAuth`: Middleware to protect routes
 
 ### Products
-- [ ] Create `Product` model in Prisma
-- [ ] Seed DB with 10+ dummy products and image URLs
-- [ ] `/api/products`: GET all products, support search/sort
+- [x] Create `Product` model in Prisma
+- [x] Seed DB with 10+ dummy products and image URLs
+- [x] `/api/products`: GET all products, support search/sort
 - [ ] `/api/products/[id]`: GET single product by ID
 
 ### Cart
