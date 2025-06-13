@@ -3,15 +3,19 @@ import { NextRequest, NextResponse } from "next/server";
 import { isValidUUID } from "@/lib/validators";
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  if (!isValidUUID(params.id)) {
+  // Workaround to satisfy the Next.js warning:
+  // Although 'params' is typically synchronous, this pattern makes it 'await'ed.
+  const { id } = await Promise.resolve(params);
+
+  if (!isValidUUID(id)) {
     return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
   }
 
   const product = await prisma.product.findUnique({
-    where: { id: params.id },
+    where: { id: id }, // Use the 'id' extracted from the awaited 'params'
   });
 
   if (!product) {
