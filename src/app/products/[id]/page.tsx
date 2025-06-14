@@ -14,7 +14,7 @@ interface Product {
 
 // IMPORTANT FIX: Use VERCEL_URL for deployed environment
 // VERCEL_URL is an environment variable automatically provided by Vercel
-// that contains the public URL of your deployment.
+
 // For local development, it will fall back to http://localhost:3000.
 const BASE_URL = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
 
