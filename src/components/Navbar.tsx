@@ -16,7 +16,7 @@ export function Navbar() {
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold">Grocery Portal</Link>
+        <Link href="/" className="text-xl font-bold text-blue-600">Grocery Portal</Link>
 
         <NavigationMenu>
           <NavigationMenuList>
