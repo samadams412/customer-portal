@@ -1,30 +1,41 @@
+// /app/products/page.tsx
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react"; // Import Suspense
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link"; 
+import Link from "next/link";
 
-export default function ProductsPage() {
+// Define the Product interface to ensure type safety
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  imageUrl?: string;
+  inStock: boolean;
+  createdAt: string; // Assuming this comes as a string from your API/Prisma
+}
+
+// Define an interface for the expected API error response structure
+interface ApiResponseError {
+  error: string; // Assuming your API returns an object with an 'error' property
+}
+
+// Create a separate component that uses useSearchParams
+// This allows you to wrap it in Suspense in the main page
+function ProductsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || ""); // Local state for immediate input feedback
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
 
-  // Directly get parameters from searchParams (useMemo is not strictly needed as searchParams is stable)
   const currentSearch = searchParams.get("search") || "";
   const currentSortBy = searchParams.get("sortBy") || "";
-  const currentOrder = searchParams.get("order") === "desc" ? "desc" : "asc"; // Ensure "asc" is default if not "desc"
+  const currentOrder = searchParams.get("order") === "desc" ? "desc" : "asc";
 
-  /**
-   * Updates a specific URL parameter and navigates to the new URL.
-   * This function is now primarily used for the search input.
-   * @param key The key of the URL parameter to update (e.g., "search", "sortBy").
-   * @param value The new value for the URL parameter.
-   */
   const updateParams = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     if (value) {
@@ -33,95 +44,90 @@ export default function ProductsPage() {
       params.delete(key);
     }
     router.push(`/products?${params.toString()}`);
-  }, [router, searchParams]); // searchParams is stable, so useCallback dependencies are fine
+  }, [router, searchParams]);
 
-  // Debounce the search input to prevent excessive API calls
   useEffect(() => {
     const handler = setTimeout(() => {
-      // Only update the URL if the local searchQuery state is different from the URL's currentSearch
-      // This prevents unnecessary router.push calls if the URL already reflects the input
       if (searchQuery !== currentSearch) {
         updateParams("search", searchQuery);
       }
-    }, 500); // 500ms debounce time
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery, currentSearch, updateParams]);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery, currentSearch, updateParams]); // Depend on searchQuery and currentSearch for debounce logic
-
-  // Effect to fetch products whenever currentSearch, currentSortBy, or currentOrder parameters change
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
-      setError(""); // Clear previous errors on new fetch attempt
+      setError("");
       try {
         const params = new URLSearchParams();
-        // Only add parameters if they have a non-empty value
         if (currentSearch) params.set("search", currentSearch);
         if (currentSortBy) params.set("sortBy", currentSortBy);
-        if (currentOrder) params.set("order", currentOrder); // 'asc' is default, so it's always set if sortBy is.
+        if (currentOrder) params.set("order", currentOrder);
 
-        // Construct the full API URL
         const apiUrl = `/api/products?${params.toString()}`;
-        console.log("Fetching products from:", apiUrl); // Log the actual URL being fetched
+        console.log("Fetching products from:", apiUrl);
 
         const res = await fetch(apiUrl);
-        const data = await res.json();
-
+        
         if (!res.ok) {
-          // If the response is not OK, throw an error to be caught by the catch block
-          throw new Error(data.error || `HTTP error! status: ${res.status}`);
+          let errorMessage = `HTTP error! status: ${res.status}`;
+          try {
+            const errorData: ApiResponseError = await res.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch (jsonError: unknown) {
+            console.error("Failed to parse error JSON:", jsonError);
+            errorMessage = `HTTP error! status: ${res.status} (Could not parse error details)`;
+          }
+          throw new Error(errorMessage);
         }
+
+        const data: Product[] = await res.json(); 
         setProducts(data);
-      } catch (err: any) {
-        console.error("Failed to fetch products:", err); // Log the error details
-        setError(err.message || "An unknown error occurred while fetching products.");
+      } catch (error: unknown) { 
+        console.error("Failed to fetch products:", error);
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError("An unknown error occurred while fetching products.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [currentSearch, currentSortBy, currentOrder]); // Depend on the derived URL parameters from searchParams
+  }, [currentSearch, currentSortBy, currentOrder]);
 
   return (
     <main className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-center">
-        {/* Search Input with debounced state */}
         <input
           type="text"
           placeholder="Search products..."
-          value={searchQuery} // Controlled component for immediate feedback
+          value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full sm:w-1/2 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
-        {/* Sort by dropdown */}
         <select
-          // Correctly set the value to ":" when no sortBy is present,
-          // otherwise use the combination of sortBy and order.
           value={currentSortBy ? `${currentSortBy}:${currentOrder}` : ":"}
           onChange={(e) => {
             const [sort, ord] = e.target.value.split(":");
-            // Create a new URLSearchParams object based on current params
             const newParams = new URLSearchParams(Array.from(searchParams.entries()));
 
             if (sort) {
-              // Set both sortBy and order if a sort option is selected
               newParams.set("sortBy", sort);
               newParams.set("order", ord);
             } else {
-              // If "Sort by" (default) is selected, remove both sortBy and order parameters
               newParams.delete("sortBy");
               newParams.delete("order");
             }
-            // Push the new URL with all parameters updated at once
             router.push(`/products?${newParams.toString()}`);
           }}
           className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value=":">Sort by</option> {/* Default empty value */}
+          <option value=":">Sort by</option>
           <option value="price:asc">Price (Low to High)</option>
           <option value="price:desc">Price (High to Low)</option>
           <option value="inStock:asc">Availability (Out of Stock First)</option>
@@ -140,7 +146,7 @@ export default function ProductsPage() {
               No products {currentSearch ? `matching "${currentSearch}"` : "available"}.
             </p>
           ) : (
-            products.map((product: any) => <ProductCard key={product.id} product={product} />)
+            products.map((product: Product) => <ProductCard key={product.id} product={product} />)
           )}
         </div>
       )}
@@ -149,7 +155,7 @@ export default function ProductsPage() {
 }
 
 // ProductCard component for better modularity
-function ProductCard({ product }: { product: any }) {
+function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/products/${product.id}`}>
       <div className="border p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
@@ -171,5 +177,14 @@ function ProductCard({ product }: { product: any }) {
         </p>
       </div>
     </Link>
+  );
+}
+
+// The main default export for the page
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading products...</div>}>
+      <ProductsPageContent />
+    </Suspense>
   );
 }

@@ -1,21 +1,29 @@
+// src/lib/auth-client.ts
 import { jwtDecode } from "jwt-decode";
 
+// Define the expected structure for the decoded JWT from client side
+interface DecodedToken {
+  exp: number;
+  // Add other properties you expect to decode on the client, e.g., userId: string; email: string;
+}
+
 class AuthService {
-  getProfile() {
+  getProfile(): DecodedToken | null { // Explicitly type the return
     const token = this.getToken();
-    return token ? jwtDecode(token) : null;
+    return token ? jwtDecode<DecodedToken>(token) : null; // Type the decode result
   }
 
-  loggedIn() {
+  loggedIn(): boolean {
     const token = this.getToken();
     return !!token && !this.isTokenExpired(token);
   }
 
   isTokenExpired(token: string): boolean {
     try {
-      const decoded: { exp: number } = jwtDecode(token);
+      const decoded: DecodedToken = jwtDecode<DecodedToken>(token);
       return decoded.exp < Date.now() / 1000;
-    } catch (err) {
+    } catch (error) { // Changed 'err' to 'error' and now used for logging
+      console.error("Error decoding token or token is invalid:", error); // Log the error for debugging
       return true;
     }
   }
@@ -35,4 +43,6 @@ class AuthService {
   }
 }
 
-export default new AuthService();
+// Assign the instance to a variable before exporting as default
+const authServiceInstance = new AuthService();
+export default authServiceInstance;
