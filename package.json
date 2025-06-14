@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "npx prisma generate --no-engine && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
+    "@prisma/extension-accelerate": "^2.0.1",
     "@radix-ui/react-navigation-menu": "^1.2.13",
     "@radix-ui/react-slot": "^1.2.3",
     "bcrypt": "^6.0.0",
@@ -46,5 +47,4 @@
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
   }
-  
 }
