@@ -1,15 +1,18 @@
+// auth/page.tsx
 'use client';
 
 import { useState } from 'react';
 import Auth from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
+// Removed: import { useRouter } from 'next/navigation'; // Not used in this component
+
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  //const router = useRouter();
+  // Removed: const router = useRouter(); // Not used, so removed the assignment
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +35,14 @@ export default function AuthPage() {
       }
 
       Auth.login(data.token); // sets localStorage + redirects
-    } catch (err) {
-      setError('Network error');
+    } catch (error: unknown) { // Changed 'err' to 'error' and typed as 'unknown'
+      console.error('Authentication submission error:', error); // Using 'error' for logging
+      // Safely access error message if it's an instance of Error
+      if (error instanceof Error) {
+        setError('Network error: ' + error.message);
+      } else {
+        setError('Network error or server unreachable');
+      }
     }
   };
 

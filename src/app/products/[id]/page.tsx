@@ -1,4 +1,4 @@
-// src/app/products/[id]/page.tsx
+// app/products/[id]/page.tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
 
@@ -20,7 +20,8 @@ export default async function ProductPage({
   // Workaround for Next.js build-time type validation:
   // Explicitly typing params as 'any' to satisfy the compiler's PageProps constraint.
   // This bypasses the strict check expecting Promise-like properties.
-  params: any; 
+  // This 'any' is a deliberate choice to prevent previous build failures.
+  params: any;
 }) {
   // Keep the await Promise.resolve(params) for consistency with previous fixes,
   // even though params is now 'any' at this point.
