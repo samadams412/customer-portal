@@ -1,32 +1,54 @@
-# Customer Portal – Online Grocery Store
+# Customer Portal Project
 
-A web application for browsing grocery items, managing customer accounts, and placing orders. Built as part of a Software Engineering course project.
+This project is a customer portal built with Next.js (App Router), React, Tailwind CSS, and ShadCN UI. It uses Prisma ORM with Prisma Postgres (Accelerate) for its database and a custom JWT-based authentication system.
 
-## Stack
-
-- **Frontend:** Next.js 15, React, TypeScript, Tailwind CSS, ShadCN UI
-- **Backend:** Next.js API Routes, Prisma, PostgreSQL
-- **Auth:** JWT-based
-- **API Testing:** Insomnia
 
 ## Setup
 
-1. Create `.env` with:
+1. Clone the Repo
+    ```
+    git clone https://github.com/samadams412/customer-portal.git
+    cd customer-portal
+    ```
 
-   ```env
-   DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/grocery"
-   JWT_SECRET="your-secret-key"
-   PROD_URL="http://localhost:3000"
+2. Install Dependencies
+    ```
+    npm install
+    ```
 
-2. Run setup
+3. Configure Environmental Variables
+    
+    Create a ```.env``` file at the root of your project. This project requires connection to the hosted Prisma Postgres database via Prisma Accelerate. 
 
-    ```npm install
-    npx prisma migrate dev --name init
-    npx prisma db seed
+    ```.env``` example:
+    ```
+    # Database Connection URL for Prisma Accelerate
+    # Get this from your Prisma Cloud dashboard (Accelerate section).
+    # IMPORTANT: Replace 'YOUR_PRISMA_ACCELERATE_API_KEY_HERE' with your actual key.
+
+    DATABASE_URL="prisma+postgres://accelerate.prisma-data.net/?api_key=YOUR_PRISMA_ACCELERATE_API_KEY_HERE"
+
+    # JWT Secret for authentication tokens
+    # Use a strong, unique secret for production deployments. For local dev, a simple string is fine.
+
+    JWT_SECRET="your_local_dev_jwt_secret"
+    ```
+
+4. Setup the Database Schema and Seed Data
+
+    1. Generate Prisma Client:
+        ```
+        npx prisma generate --no-engine
+        ```
+    2. Apply Migrations to Database:
+        ```
+        npx prisma migrate deploy
+        ```
+    3. Seed the Database
+        ```
+        npx prisma db seed
+        ```
+5. Run the Development Server
+    ```
     npm run dev
-
-## Repo Workflow
-
-* Use feature branches and PRs to merge into main
-* Track tasks via GitHub Issues
-* Branch protection enabled on main
+    ```
