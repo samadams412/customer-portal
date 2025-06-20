@@ -4,5 +4,6 @@ export interface Product {
   price: number;
   imageUrl?: string;
   inStock: boolean;
-  createdAt: string; // Assuming this comes as a string from your API/Prisma
+  createdAt: Date;
+  updatedAt: Date;
 }

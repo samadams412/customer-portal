@@ -6,9 +6,6 @@
 import { PrismaClient } from '@prisma/client/edge'; // IMPORTANT: Use '/edge' for serverless environments like Vercel
 import { withAccelerate } from '@prisma/extension-accelerate'; // Import the Accelerate extension
 
-// Define a type for the singleton PrismaClient instance
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
-
 // Function to create and extend the PrismaClient instance
 const prismaClientSingleton = () => {
   return new PrismaClient({
@@ -17,11 +14,15 @@ const prismaClientSingleton = () => {
   }).$extends(withAccelerate()); // Extend with Accelerate for connection pooling and caching
 };
 
+// Define a type for the extended PrismaClient instance
+// This type accurately reflects the client after extensions have been applied.
+export type ExtendedPrismaClient = ReturnType<typeof prismaClientSingleton>;
+
 // Declare a global variable to store the PrismaClient instance.
 // This is necessary to maintain a single instance across hot reloads in development.
 declare global {
   // eslint-disable-next-line no-var
-  var prismaGlobal: PrismaClientSingleton | undefined;
+  var prismaGlobal: ExtendedPrismaClient | undefined;
 }
 
 // Export the singleton PrismaClient instance.
