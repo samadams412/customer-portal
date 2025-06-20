@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Product } from "@/types/product"; // Import Product interface from centralized types
 
+// Re-introducing BASE_URL with more robust detection for both local and deployment.
+// VERCEL_URL is an environment variable automatically provided by Vercel for the deployment URL.
+// Use 'https://' for production and 'http://' for local development.
 const PROTOCOL = process.env.NODE_ENV === 'production' ? 'https://' : 'http://';
 const HOST = process.env.VERCEL_URL || 'localhost:3000'; // Fallback to localhost:3000 for local dev
 const BASE_URL = `${PROTOCOL}${HOST}`;
@@ -10,12 +13,13 @@ const BASE_URL = `${PROTOCOL}${HOST}`;
 export default async function ProductPage({
   params,
 }: {
-  // Refined typing: `params` is expected to be an object with an `id` string.
-  // This removes the need for `await Promise.resolve(params)` inside,
-  // as Next.js handles this correctly when the type is known.
-  params: { id: string };
+  // FIX: Revert to 'any' for params type and use Promise.resolve()
+  // This satisfies Next.js's internal PageProps constraint for dynamic routes.
+  params: any; 
 }) {
-  const { id } = params; // Directly destructure `id` as it's now typed
+  // Ensure params is awaited to correctly extract id, satisfying the runtime behavior
+  // expected by Next.js when params is typed as 'any'.
+  const { id } = await Promise.resolve(params); 
 
   // Perform the initial fetch and 404 check OUTSIDE the general try/catch.
   // This ensures that notFound() throws its special error directly to Next.js's
