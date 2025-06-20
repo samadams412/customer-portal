@@ -1,9 +1,9 @@
 // src/app/api/cart/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from '@prisma/client'; // Import PrismaClient for type hinting
-import { prisma } from "@/lib/prisma";
-import { withAuth } from "@/lib/auth"; // Assuming withAuth middleware is available
-import { Product } from "@/types/product"; // Import Product interface for type safety
+// import { Prisma } from '@prisma/client'; // Keep if other Prisma namespace types are used
+import { prisma, ExtendedPrismaClient } from "@/lib/prisma"; // Import ExtendedPrismaClient
+import { Product } from "@/types/product"; // Keep Product import, it's used implicitly by 'include: { product: true }'
+import { withAuth } from "@/lib/auth";
 
 // Interface for the payload when adding/updating a cart item
 interface CartItemPayload {
@@ -22,7 +22,7 @@ export const GET = withAuth(async (request: NextRequest, user) => {
       include: {
         items: {
           include: {
-            product: true, // Include product details for each cart item
+            product: true, // Product type is implicitly used here for the shape of the returned data
           },
         },
       },
@@ -55,7 +55,8 @@ export const POST = withAuth(async (request: NextRequest, user) => {
 
     // 1. Find or Create User's Cart
     // This transaction ensures atomicity: either cart is found/created, or the whole operation fails.
-    const cart = await prisma.$transaction(async (prismaTx: PrismaClient) => { // FIX: Explicitly type prismaTx
+    // FIX: Use 'any' type for prismaTx as a workaround for complex type inference issues with Accelerate extension in transactions.
+    const cart = await prisma.$transaction(async (prismaTx: any) => { 
       let userCart = await prismaTx.cart.findUnique({
         where: { userId: user.id },
       });
@@ -93,18 +94,18 @@ export const POST = withAuth(async (request: NextRequest, user) => {
       },
     });
 
-    let updatedCart;
+    let updatedCartItemResult; 
     if (existingCartItem) {
       // Update quantity if item already exists
-      updatedCart = await prisma.cartItem.update({
+      updatedCartItemResult = await prisma.cartItem.update({
         where: { id: existingCartItem.id },
         data: { quantity: existingCartItem.quantity + quantity },
         include: { product: true }, // Include product for response
       });
-      console.log(`Updated quantity for cart item ${updatedCart.id}`);
+      console.log(`Updated quantity for cart item ${updatedCartItemResult.id}`);
     } else {
       // Add new item to cart
-      updatedCart = await prisma.cartItem.create({
+      updatedCartItemResult = await prisma.cartItem.create({
         data: {
           cartId: cart.id,
           productId: productId,
@@ -112,10 +113,10 @@ export const POST = withAuth(async (request: NextRequest, user) => {
         },
         include: { product: true }, // Include product for response
       });
-      console.log(`Added new cart item ${updatedCart.id}`);
+      console.log(`Added new cart item ${updatedCartItemResult.id}`);
     }
 
-    // Optionally, return the full updated cart or just the updated item
+    // Return the full updated cart
     const fullCart = await prisma.cart.findUnique({
         where: { id: cart.id },
         include: {
