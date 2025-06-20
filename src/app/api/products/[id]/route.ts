@@ -7,14 +7,16 @@ export async function GET(
   request: NextRequest,
   // Workaround: Type params as a Promise to satisfy Next.js's internal type checking
   // This is specifically to resolve the build error related to 'Promise<any>' properties
-  context: { params: Promise<{ id: string }> } 
+  context: { params: Promise<{ id: string }> }
 ) {
   // Await the params object to get the actual id.
   // This satisfies the runtime access and the compile-time 'Promise' expectation.
   const { id } = await context.params;
 
+  // FIX: Return 404 Not Found for invalid ID format instead of 400 Bad Request.
+  // This allows the client-side page.tsx to trigger Next.js's notFound() helper.
   if (!isValidUUID(id)) {
-    return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+    return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
 
   try {
@@ -23,6 +25,7 @@ export async function GET(
     });
 
     if (!product) {
+      // Keep this as 404 for actual product not found
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 

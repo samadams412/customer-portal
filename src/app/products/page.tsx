@@ -1,20 +1,11 @@
 // /app/products/page.tsx
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react"; // Import Suspense
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-
-// Define the Product interface to ensure type safety
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  imageUrl?: string;
-  inStock: boolean;
-  createdAt: string; // Assuming this comes as a string from your API/Prisma
-}
+import { Product } from "@/types/product"; // Import Product interface from centralized types
 
 // Define an interface for the expected API error response structure
 interface ApiResponseError {
@@ -66,7 +57,7 @@ function ProductsPageContent() {
         if (currentOrder) params.set("order", currentOrder);
 
         const apiUrl = `/api/products?${params.toString()}`;
-        console.log("Fetching products from:", apiUrl);
+        //console.log("Fetching products from:", apiUrl);
 
         const res = await fetch(apiUrl);
         
@@ -157,24 +148,34 @@ function ProductsPageContent() {
 // ProductCard component for better modularity
 function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href={`/products/${product.id}`}>
-      <div className="border p-4 rounded shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer">
+    <Link href={`/products/${product.id}`} className="block"> {/* Ensure Link is block-level */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden
+                    transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer">
         {product.imageUrl && (
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            width={400}
-            height={300}
-            className="w-full h-auto object-cover mb-3 rounded-md"
-          />
+          <div className="relative w-full h-48 sm:h-56 md:h-64 overflow-hidden"> {/* Responsive height */}
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              fill // Use fill for responsive images in a container
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw" // Image optimization
+              className="object-cover transition-transform duration-300 hover:scale-110"
+              priority={false} // Only prioritize LCP images
+            />
+          </div>
         )}
-        <h2 className="text-lg font-semibold text-gray-800">{product.name}</h2>
-        <p className="text-gray-700">${product.price.toFixed(2)}</p>
-        <p className="text-sm">
-          <span className={`font-medium ${product.inStock ? "text-green-600" : "text-red-600"}`}>
-            {product.inStock ? "In Stock" : "Out of Stock"}
-          </span>
-        </p>
+        <div className="p-4"> {/* Padding for content inside card */}
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-1 truncate">
+            {product.name}
+          </h2>
+          <p className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-2">
+            ${product.price.toFixed(2)}
+          </p>
+          <p className="text-sm">
+            <span className={`font-medium ${product.inStock ? "text-green-600" : "text-red-600"}`}>
+              {product.inStock ? "In Stock" : "Out of Stock"}
+            </span>
+          </p>
+        </div>
       </div>
     </Link>
   );
