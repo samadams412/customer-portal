@@ -1,31 +1,162 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] // Keep if using Accelerate driver adapters
 }
-// output   = "../src/generated/prisma"
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  
 }
 
+// User Model (Existing - with new relationships)
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  // Relationships to new models
+  addresses Address[] // A user can have multiple addresses
+  cart      Cart?     // A user has one cart (optional, created on first item if not present)
+  orders    Order[]   // A user can place multiple orders
 }
+
+// Product Model (Existing)
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   name        String
   price       Float
   imageUrl    String?
-  inStock     Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  inStock     Boolean
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships to new models
+  cartItems   CartItem[] // A product can be in many cart items
+  orderItems  OrderItem[] // A product can be in many order items (historical record)
+}
+
+// New: Address Model
+// Stores multiple addresses for a user
+
+model Address {
+  id         String    @id @default(uuid())
+  street     String
+  city       String
+  state      String
+  zipCode    String
+  isDefault  Boolean   @default(false) // Flag for a user's default address
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // Relationship to User (Foreign Key)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+
+  // Relationship to Order (An address can be used for multiple orders as a shipping address)
+  orders     Order[]   // Orders that used this address as shipping address
+
+  // Ensures only one default address per user. 'isDefault' must be true for this uniqueness constraint to apply.
+  @@unique([userId, isDefault], name: "UserDefaultAddress")
+}
+
+// New: Cart Model
+// Represents a user's current shopping cart
+
+model Cart {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relationship to User (One-to-one, ensures a user has only one active cart)
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+
+  // Relationship to CartItem
+  items     CartItem[] // A cart contains many cart items
+}
+
+// New: CartItem Model
+// Represents a specific product and its quantity in a user's cart
+
+model CartItem {
+  id        String    @id @default(uuid())
+  quantity  Int       @default(1)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relationships
+  cartId    String
+  cart      Cart      @relation(fields: [cartId], references: [id])
+
+  productId String
+  product   Product   @relation(fields: [productId], references: [id])
+
+  // Ensures a product appears only once in a given cart
+  @@unique([cartId, productId])
+}
+
+// New: Order Model
+// Represents a finalized purchase by a user
+
+model Order {
+  id                String          @id @default(uuid())
+  orderDate         DateTime        @default(now())
+  totalAmount       Float           // Final amount including tax and discounts
+  subtotalAmount    Float           // Sum of product prices * quantities, before tax/discount
+  taxAmount         Float           // Calculated tax amount
+  discountCode      String?         // The discount code string if applied
+  discountAmount    Float?          // The actual amount saved by discount
+  deliveryType      DeliveryTypeEnum // Enum for delivery or pickup
+  status            OrderStatusEnum // Enum for order status lifecycle
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  // Relationship to User
+  userId            String
+  user              User            @relation(fields: [userId], references: [id])
+
+  // Relationship to Shipping Address (Optional, if deliveryType is DELIVERY)
+  shippingAddressId String?         
+  shippingAddress   Address?        @relation(fields: [shippingAddressId], references: [id])
+
+  // Relationship to OrderItems
+  orderItems        OrderItem[]     // An order contains many order items
+}
+
+// New: OrderItem Model
+// Represents a specific product and its quantity in a completed order (snapshot)
+
+model OrderItem {
+  id             String    @id @default(uuid())
+  quantity       Int
+  priceAtPurchase Float    // Crucial: Price of the product when the order was placed
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relationships
+  orderId        String
+  order          Order     @relation(fields: [orderId], references: [id])
+
+  productId      String
+  product        Product   @relation(fields: [productId], references: [id])
+}
+
+// Enums for Order fields
+enum DeliveryTypeEnum {
+  PICKUP
+  DELIVERY
+}
+
+enum OrderStatusEnum {
+  PENDING      // Initial state, e.g., after order placed, before payment confirmed or processing begins
+  PROCESSING   // Order is being prepared/fulfilled
+  SHIPPED      // Order has left the warehouse/store for delivery (if applicable)
+  DELIVERED    // Order has been received by the customer
+  CANCELLED    // Order was cancelled
 }
