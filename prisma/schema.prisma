@@ -61,8 +61,8 @@ model Address {
   // Relationship to Order (An address can be used for multiple orders as a shipping address)
   orders     Order[]   // Orders that used this address as shipping address
 
-  // Ensures only one default address per user. 'isDefault' must be true for this uniqueness constraint to apply.
-  @@unique([userId, isDefault], name: "UserDefaultAddress")
+  // It correctly allows multiple non-default addresses (isDefault: false) for the same user.
+ // @@unique([userId, isDefault], name: "UserDefaultAddress", where: { isDefault: true })
 }
 
 // New: Cart Model
