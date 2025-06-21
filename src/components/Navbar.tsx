@@ -31,8 +31,8 @@ export function Navbar() {
             {isLoggedIn && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/orders" className={cn("text-sm font-medium hover:underline")}>
-                    Orders
+                  <Link href="/dashboard" className={cn("text-sm font-medium hover:underline")}>
+                    Dashboard
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>

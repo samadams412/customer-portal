@@ -2,7 +2,6 @@
   "name": "customer-portal",
   "version": "0.1.0",
   "private": true,
-  
   "scripts": {
     "dev": "next dev",
     "build": "npx prisma generate --no-engine && next build",
@@ -13,9 +12,14 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
     "@prisma/client": "^6.9.0",
     "@prisma/extension-accelerate": "^2.0.1",
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-navigation-menu": "^1.2.13",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -27,10 +31,12 @@
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.58.1",
     "shadcn-ui": "^0.9.5",
     "tailwind-merge": "^3.3.0",
     "tailwind-variants": "^1.0.0",
-    "typescript-eslint": "^8.34.0"
+    "typescript-eslint": "^8.34.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
