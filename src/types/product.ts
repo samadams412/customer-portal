@@ -22,6 +22,17 @@ export interface Address {
   userId: string;
 }
 
+// FIX: Added CartItem interface
+export interface CartItem {
+  id: string;
+  quantity: number;
+  cartId: string;
+  productId: string;
+  product: Product; // Include nested product details
+  // Add other fields from your Prisma CartItem model like createdAt, updatedAt if needed for client-side
+}
+
+
 export interface OrderItem {
   id: string;
   quantity: number;
@@ -38,8 +49,8 @@ export interface Order {
   taxAmount: number;
   discountCode?: string | null;
   discountAmount?: number | null;
-  deliveryType: 'DELIVERY' | 'PICKUP';
-  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+  deliveryType: 'DELIVERY' | 'PICKUP'; // These are string literals matching Prisma enums
+  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'; // String literals matching Prisma enums
   shippingAddressId?: string | null;
   shippingAddress?: Address; // Includes nested address details if delivery
   orderItems: OrderItem[];

@@ -1,7 +1,9 @@
 // src/app/api/address/route.ts
+// This route manages user addresses (create and fetch).
+
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { withAuth } from "@/lib/auth"; // Assuming you have withAuth middleware for protection
+import { prisma } from "@/lib/prisma"; // Your Prisma client
+import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
 
 // Define the expected shape for creating an address
 interface CreateAddressPayload {
@@ -13,7 +15,13 @@ interface CreateAddressPayload {
 }
 
 // --- POST /api/address (Create Address) ---
-export const POST = withAuth(async (request: NextRequest, user) => {
+export async function POST(request: NextRequest) {
+  // Authenticate the user using NextAuth.js session
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body: CreateAddressPayload = await request.json();
     const { street, city, state, zipCode, isDefault = false } = body;
@@ -61,10 +69,16 @@ export const POST = withAuth(async (request: NextRequest, user) => {
     }
     return NextResponse.json({ error: "Failed to create address" }, { status: 500 });
   }
-});
+}
 
 // --- GET /api/address (Fetch All Addresses for User) ---
-export const GET = withAuth(async (request: NextRequest, user) => {
+export async function GET(request: NextRequest) {
+  // Authenticate the user using NextAuth.js session
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const addresses = await prisma.address.findMany({
       where: {
@@ -83,4 +97,4 @@ export const GET = withAuth(async (request: NextRequest, user) => {
     }
     return NextResponse.json({ error: "Failed to fetch addresses" }, { status: 500 });
   }
-});
+}

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useSession } from "next-auth/react"; // Import useSession for checking session status
 
 import {
   Dialog,
@@ -18,7 +19,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Address } from "@/types/product"; // Import Address interface
-import Auth from "@/lib/auth-client"; // Client-side auth service
 
 // Define the schema for address form validation using Zod
 const addressFormSchema = z.object({
@@ -36,6 +36,7 @@ interface AddressFormModalProps {
 }
 
 export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressFormModalProps) {
+  const { status } = useSession(); // Get session status
   const form = useForm<z.infer<typeof addressFormSchema>>({
     resolver: zodResolver(addressFormSchema),
     defaultValues: {
@@ -63,12 +64,15 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
   }, [addressToEdit, form]);
 
   const onSubmit = async (values: z.infer<typeof addressFormSchema>) => {
-    try {
-      const token = Auth.getToken();
-      if (!token) {
-        throw new Error("Authentication token missing.");
-      }
+    if (status !== 'authenticated') {
+      form.setError("root.serverError", {
+        type: "auth",
+        message: "You must be logged in to manage addresses.",
+      });
+      return;
+    }
 
+    try {
       const method = addressToEdit ? 'PUT' : 'POST';
       const url = addressToEdit ? `/api/address/${addressToEdit.id}` : '/api/address';
 
@@ -76,7 +80,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
         method: method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          // REMOVED: 'Authorization': `Bearer ${token}`, // NextAuth.js uses cookies, no manual token header needed
         },
         body: JSON.stringify(values),
       });
@@ -104,7 +108,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
       if (!open) onClose(); // Only close if user initiates closing
       form.reset(); // Reset form state when dialog closes
     }}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
         <DialogHeader>
           <DialogTitle>{addressToEdit ? "Edit Address" : "Add New Address"}</DialogTitle>
           <DialogDescription>
@@ -120,7 +124,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>Street</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main St" {...field} />
+                    <Input placeholder="123 Main St" {...field} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,7 +137,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="Anytown" {...field} />
+                    <Input placeholder="Anytown" {...field} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -146,7 +150,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>State (2-letter code)</FormLabel>
                   <FormControl>
-                    <Input placeholder="CA" {...field} maxLength={2} />
+                    <Input placeholder="CA" {...field} maxLength={2} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,7 +163,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>Zip Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="90210" {...field} />
+                    <Input placeholder="90210" {...field} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -169,7 +173,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
               control={form.control}
               name="isDefault"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
                   <FormControl>
                     {/* Checkbox component needs to be imported or custom built */}
                     {/* For simplicity, using a native input type checkbox here */}
@@ -177,12 +181,12 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                       type="checkbox"
                       checked={field.value}
                       onChange={field.onChange}
-                      className="mt-1"
+                      className="mt-1 dark:bg-gray-600 dark:border-gray-500"
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Set as Default Address</FormLabel>
-                    <DialogDescription className="text-sm text-muted-foreground">
+                    <DialogDescription className="text-sm text-muted-foreground dark:text-gray-400">
                       Setting this as default will unmark any other default addresses.
                     </DialogDescription>
                   </div>
@@ -195,7 +199,8 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
               </p>
             )}
             <DialogFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button type="submit" disabled={form.formState.isSubmitting || status !== 'authenticated'}
+                      className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600">
                 {form.formState.isSubmitting ? "Saving..." : (addressToEdit ? "Save Changes" : "Add Address")}
               </Button>
             </DialogFooter>

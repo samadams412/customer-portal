@@ -3,21 +3,22 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import Auth from '@/lib/auth-client';
+import { useSession } from 'next-auth/react'; // Import useSession from NextAuth.js
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Address, Order } from '@/types/product'; // Import only necessary types for this file
+import { Address, Order } from '@/types/product'; // Import Address and Order interfaces
 
-// Import the new modular components
+// Import the modular components
 import { AddressCard } from '@/components/address-card';
 import { OrderCard } from '@/components/order-card';
-import { ConfirmationDialog } from '@/components/confirmation-dialog'; // Import the new ConfirmationDialog
+import { ConfirmationDialog } from '@/components/confirmation-dialog';
 import { AddressFormModal } from '@/components/address-form-modal';
-// import { AddressFormModal } from '@/components/address-form-modal'; // Will create this later
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { data: session, status } = useSession(); // Get session data and status from NextAuth.js
+
+  const [loadingInitialAuth, setLoadingInitialAuth] = useState(true); // Initial loading for authentication check
   const [loadingAddresses, setLoadingAddresses] = useState(true);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
@@ -27,8 +28,6 @@ export default function DashboardPage() {
   const [addressError, setAddressError] = useState<string | null>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
   // State for the Address Form Modal
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null); // Null for add, Address object for edit
@@ -37,38 +36,37 @@ export default function DashboardPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [addressToDeleteId, setAddressToDeleteId] = useState<string | null>(null);
 
-
-  // 1. Authenticate user and redirect if not logged in
+  // 1. Handle authentication status and redirect if not logged in
   useEffect(() => {
-    if (!Auth.loggedIn()) {
-      router.push('/auth');
-    } else {
-      setIsAuthenticated(true);
-      setLoading(false);
+    if (status === 'loading') {
+      setLoadingInitialAuth(true); // Still checking session
+    } else if (status === 'unauthenticated') {
+      router.push('/auth'); // Redirect to login page if not authenticated
+    } else if (status === 'authenticated') {
+      setLoadingInitialAuth(false); // Authentication check complete and successful
     }
-  }, [router]);
+  }, [status, router]);
+
 
   // 2. Fetch Addresses for the authenticated user
   const fetchAddresses = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (status !== 'authenticated') { // Ensure user is authenticated before fetching
+      setLoadingAddresses(false); // Stop loading if not authenticated
+      setAddressError("Not authenticated to fetch addresses.");
+      return;
+    }
 
     setLoadingAddresses(true);
     setAddressError(null);
     try {
-      const token = Auth.getToken();
-      if (!token) {
-        setAddressError("Authentication token not found.");
-        setLoadingAddresses(false);
-        return;
-      }
-
-      const res = await fetch('/api/address', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      // No manual token needed; NextAuth.js handles session cookies automatically
+      const res = await fetch('/api/address');
 
       if (!res.ok) {
+        if (res.status === 401) { // Unauthorized, might be session issue
+          router.push('/auth'); // Redirect to login
+          return;
+        }
         const errorData = await res.json();
         throw new Error(errorData.error || `Failed to fetch addresses: ${res.status}`);
       }
@@ -81,29 +79,27 @@ export default function DashboardPage() {
     } finally {
       setLoadingAddresses(false);
     }
-  }, [isAuthenticated]);
+  }, [status, router]); // Dependency on status to trigger fetch when auth changes
 
   // 3. Fetch Orders for the authenticated user
   const fetchOrders = useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (status !== 'authenticated') { // Ensure user is authenticated before fetching
+      setLoadingOrders(false); // Stop loading if not authenticated
+      setOrderError("Not authenticated to fetch orders.");
+      return;
+    }
 
     setLoadingOrders(true);
     setOrderError(null);
     try {
-      const token = Auth.getToken();
-      if (!token) {
-        setOrderError("Authentication token not found.");
-        setLoadingOrders(false);
-        return;
-      }
-
-      const res = await fetch('/api/orders', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      // No manual token needed
+      const res = await fetch('/api/orders');
 
       if (!res.ok) {
+        if (res.status === 401) { // Unauthorized, might be session issue
+          router.push('/auth'); // Redirect to login
+          return;
+        }
         const errorData = await res.json();
         throw new Error(errorData.error || `Failed to fetch orders: ${res.status}`);
       }
@@ -116,15 +112,15 @@ export default function DashboardPage() {
     } finally {
       setLoadingOrders(false);
     }
-  }, [isAuthenticated]);
+  }, [status, router]); // Dependency on status to trigger fetch when auth changes
 
-  // Trigger fetches when authenticated
+  // Trigger fetches when authentication status becomes 'authenticated'
   useEffect(() => {
-    if (isAuthenticated) {
+    if (status === 'authenticated') {
       fetchAddresses();
       fetchOrders();
     }
-  }, [isAuthenticated, fetchAddresses, fetchOrders]);
+  }, [status, fetchAddresses, fetchOrders]); // Trigger when status becomes authenticated
 
 
   // --- Address Management Handlers ---
@@ -143,7 +139,7 @@ export default function DashboardPage() {
     }
   };
 
-  // Initiates the confirmation dialog - FIX: Made async to match AddressCard onDelete signature
+  // Initiates the confirmation dialog
   const confirmDeleteAddress = async (addressId: string) => { 
     setAddressToDeleteId(addressId);
     setIsDeleteDialogOpen(true);
@@ -151,22 +147,19 @@ export default function DashboardPage() {
 
   // Handles the actual deletion after confirmation
   const executeDeleteAddress = async () => {
-    if (!addressToDeleteId) return; // Should not happen if dialog is open correctly
+    if (!addressToDeleteId) return;
 
     try {
-      const token = Auth.getToken();
-      if (!token) {
-        throw new Error("Authentication token missing.");
-      }
-
+      // No manual token needed
       const res = await fetch(`/api/address/${addressToDeleteId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
       });
 
       if (!res.ok) {
+        if (res.status === 401) {
+          router.push('/auth');
+          return;
+        }
         const errorData = await res.json();
         throw new Error(errorData.error || `Failed to delete address: ${res.status}`);
       }
@@ -180,7 +173,6 @@ export default function DashboardPage() {
       setAddressError(error instanceof Error ? error.message : "Failed to delete address.");
       setIsDeleteDialogOpen(false); // Close dialog even on error
       setAddressToDeleteId(null); // Clear ID
-      // Optional: Show a more persistent error notification to the user
     }
   };
 
@@ -200,34 +192,38 @@ export default function DashboardPage() {
   };
 
 
-  if (loading) {
+  // Show loading indicator until authentication status is determined
+  if (loadingInitialAuth) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50">
         <p>Loading dashboard...</p>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return null; // Should redirect, but this is a fallback if not authenticated
+  // If not authenticated, the useEffect above should have redirected.
+  // This return null is a safeguard, but typically won't be reached if redirect works.
+  if (status === 'unauthenticated') {
+    return null;
   }
 
+  // If we reach here, user is authenticated
   return (
-    <main className="container mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-6">Your Dashboard</h1>
+    <main className="container mx-auto p-6 space-y-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Your Dashboard</h1>
 
       {/* Addresses Section */}
       <section className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">Your Addresses</h2>
+          <h2 className="text-2xl font-semibold">Your Addresses</h2>
           <Button onClick={handleAddAddress} className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600">
             Add New Address
           </Button>
         </div>
         {loadingAddresses ? (
           <div className="space-y-4">
-            <Skeleton className="h-24 w-full rounded-md" />
-            <Skeleton className="h-24 w-full rounded-md" />
+            <Skeleton className="h-24 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
+            <Skeleton className="h-24 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
           </div>
         ) : addressError ? (
           <p className="text-red-500 text-center">{addressError}</p>
@@ -240,7 +236,7 @@ export default function DashboardPage() {
                 key={address.id}
                 address={address}
                 onEdit={handleEditAddress}
-                onDelete={confirmDeleteAddress} // Use the confirmation dialog trigger
+                onDelete={confirmDeleteAddress}
               />
             ))}
           </div>
@@ -249,11 +245,11 @@ export default function DashboardPage() {
 
       {/* Order History Section */}
       <section className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Your Orders</h2>
+        <h2 className="text-2xl font-semibold mb-4">Your Orders</h2>
         {loadingOrders ? (
           <div className="space-y-4">
-            <Skeleton className="h-40 w-full rounded-md" />
-            <Skeleton className="h-40 w-full rounded-md" />
+            <Skeleton className="h-40 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
+            <Skeleton className="h-40 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
           </div>
         ) : orderError ? (
           <p className="text-red-500 text-center">{orderError}</p>
@@ -282,7 +278,7 @@ export default function DashboardPage() {
         cancelText="Cancel"
       />
 
-      {/* Address Form Modal (will be implemented next) */}
+      {/* Address Form Modal */}
       {isAddressModalOpen && (
         <AddressFormModal
           isOpen={isAddressModalOpen}

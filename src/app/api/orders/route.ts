@@ -1,9 +1,11 @@
 // src/app/api/orders/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { prisma, ExtendedPrismaClient } from "@/lib/prisma"; // Import ExtendedPrismaClient
-import { withAuth } from "@/lib/auth"; // Assuming withAuth middleware is available
+// This route manages user orders (place new order and fetch order history).
 
-// Interface for the payload when placing an order
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
+
+// Define the expected shape for placing an order
 interface PlaceOrderPayload {
   shippingAddressId?: string; // Optional if deliveryType is PICKUP
   deliveryType: "DELIVERY" | "PICKUP"; // Assuming these are from DeliveryTypeEnum
@@ -11,8 +13,13 @@ interface PlaceOrderPayload {
 }
 
 // --- POST /api/orders (Place an Order) ---
-// This endpoint converts the user's current cart into a new order.
-export const POST = withAuth(async (request: NextRequest, user, context: any) => {
+export async function POST(request: NextRequest) {
+  // Authenticate the user using NextAuth.js session
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { shippingAddressId, deliveryType, discountCode }: PlaceOrderPayload = await request.json();
 
@@ -25,7 +32,7 @@ export const POST = withAuth(async (request: NextRequest, user, context: any) =>
     }
 
     // Start a Prisma transaction to ensure atomicity for order creation and cart clearing
-    const order = await prisma.$transaction(async (prismaTx: any) => { // Use 'any' as workaround for Accelerate typing
+    const order = await prisma.$transaction(async (prismaTx) => {
       // 1. Fetch the user's cart and its items
       const userCart = await prismaTx.cart.findUnique({
         where: { userId: user.id },
@@ -48,12 +55,10 @@ export const POST = withAuth(async (request: NextRequest, user, context: any) =>
         subtotalAmount += item.product.price * item.quantity;
       }
 
-      const taxRate = 0.0825; // Example: 8.25% sales tax
+      const taxRate = 0.0825; // Example: 8.25% sales tax (adjust as needed)
       const taxAmount = subtotalAmount * taxRate;
       
-      // For now, no actual discount logic. If discountCode is present, apply dummy discount.
-      // In a real app, you'd validate the discountCode and fetch its value.
-      const discountAmount = discountCode ? (subtotalAmount * 0.10) : 0; // 10% dummy discount
+      const discountAmount = discountCode ? (subtotalAmount * 0.10) : 0; // 10% dummy discount (replace with real logic)
       
       const totalAmount = subtotalAmount + taxAmount - discountAmount;
 
@@ -67,15 +72,14 @@ export const POST = withAuth(async (request: NextRequest, user, context: any) =>
           discountAmount: parseFloat(discountAmount.toFixed(2)),
           totalAmount: parseFloat(totalAmount.toFixed(2)),
           deliveryType: deliveryType,
-          status: 'PENDING', // Initial status
+          status: 'PENDING', // Initial status (will be updated by Stripe webhook for payment confirmation)
           shippingAddressId: deliveryType === 'DELIVERY' ? shippingAddressId : null,
-          // Optional: You might want to associate a dummy payment ID here if integrating a payment gateway
         },
       });
       console.log(`Created new order ${newOrder.id} for user ${user.id}`);
 
 
-      // 4. Create OrderItems from CartItems
+      // 4. Create OrderItems from CartItems (snapshot of the cart at time of order)
       const orderItemsData = userCart.items.map((item: { productId: any; quantity: any; product: { price: any; }; }) => ({
         orderId: newOrder.id,
         productId: item.productId,
@@ -94,15 +98,10 @@ export const POST = withAuth(async (request: NextRequest, user, context: any) =>
       });
       console.log(`Cleared cart ${userCart.id} for user ${user.id}`);
 
-      // If needed, delete the cart itself if it's empty, or keep it.
-      // await prismaTx.cart.delete({ where: { id: userCart.id } });
-
-      return newOrder; // Return the newly created order
+      return newOrder;
     });
 
-    // Final response
     return NextResponse.json(order, { status: 201 }); // 201 Created
-
   } catch (error: unknown) {
     console.error("POST /api/orders error:", error);
     if (error instanceof Error) {
@@ -110,11 +109,16 @@ export const POST = withAuth(async (request: NextRequest, user, context: any) =>
     }
     return NextResponse.json({ error: "Failed to place order" }, { status: 500 });
   }
-});
+}
 
 // --- GET /api/orders (Fetch User's Orders) ---
-// Fetches all orders for the authenticated user, with details.
-export const GET = withAuth(async (request: NextRequest, user, context: any) => {
+export async function GET(request: NextRequest) {
+  // Authenticate the user using NextAuth.js session
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const orders = await prisma.order.findMany({
       where: {
@@ -123,13 +127,13 @@ export const GET = withAuth(async (request: NextRequest, user, context: any) => 
       include: {
         orderItems: {
           include: {
-            product: true, // Include product details for each order item
+            product: true, // Include product details for each item
           },
         },
-        shippingAddress: true, // Include shipping address details if linked
+        shippingAddress: true, // Include the shipping address details if available
       },
       orderBy: {
-        orderDate: 'desc', // Order by most recent orders first
+        orderDate: 'desc', // Order by most recent first
       },
     });
 
@@ -141,4 +145,4 @@ export const GET = withAuth(async (request: NextRequest, user, context: any) => 
     }
     return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
   }
-});
+}
