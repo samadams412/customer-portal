@@ -38,7 +38,7 @@ export function OrderCard({ order }: OrderCardProps) {
           </div>
         )}
         <div className="mt-4 text-right">
-          <Link href={`/dashboard/orders/${order.id}`}>
+          <Link href={`/orders/${order.id}`}>
             <Button variant="link" size="sm">View Details</Button>
           </Link>
         </div>

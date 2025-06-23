@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Product } from "@/types/product"; // Import Product interface from centralized types
-import { log } from "console";
 
 // Re-introducing BASE_URL with more robust detection for both local and deployment.
 // VERCEL_URL is an environment variable automatically provided by Vercel for the deployment URL.
