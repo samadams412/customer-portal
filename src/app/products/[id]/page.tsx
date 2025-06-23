@@ -1,7 +1,7 @@
-// src/app/products/[id]/page.tsx
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { Product } from "@/types/product"; // Import Product interface from centralized types
+import { log } from "console";
 
 // Re-introducing BASE_URL with more robust detection for both local and deployment.
 // VERCEL_URL is an environment variable automatically provided by Vercel for the deployment URL.
@@ -29,7 +29,7 @@ export default async function ProductPage({
   });
 
   if (res.status === 404) {
-    console.log("Product not found (404 response received), triggering notFound().");
+    //console.log("Product not found (404 response received), triggering notFound().");
     return notFound(); // Trigger Next.js's not-found page here
   }
 
@@ -64,6 +64,7 @@ export default async function ProductPage({
   }
 
   // Render error message if a non-404 error occurred during fetch or parsing
+  // Note: Perhaps modularize this into its own Error Component
   if (displayError) {
     return (
       <div className="max-w-xl mx-auto p-6 text-center text-red-500">

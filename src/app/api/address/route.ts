@@ -1,9 +1,6 @@
-// src/app/api/address/route.ts
-// This route manages user addresses (create and fetch).
-
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Your Prisma client
-import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
+import { prisma } from "@/lib/prisma";
+import { getSessionUser } from "@/lib/auth-server";
 
 // Define the expected shape for creating an address
 interface CreateAddressPayload {
@@ -11,9 +8,10 @@ interface CreateAddressPayload {
   city: string;
   state: string;
   zipCode: string;
-  isDefault?: boolean; // Optional: client can suggest if it's default
+  isDefault?: boolean; 
 }
 
+// Add User Address
 // --- POST /api/address (Create Address) ---
 export async function POST(request: NextRequest) {
   // Authenticate the user using NextAuth.js session
@@ -71,6 +69,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Get User Address
 // --- GET /api/address (Fetch All Addresses for User) ---
 export async function GET(request: NextRequest) {
   // Authenticate the user using NextAuth.js session
@@ -86,6 +85,7 @@ export async function GET(request: NextRequest) {
       },
       orderBy: {
         isDefault: 'desc', // Show default address first
+                         
       },
     });
 

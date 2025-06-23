@@ -12,6 +12,3 @@ const handler = NextAuth(authOptions);
 // NextAuth.js uses these to manage authentication flows.
 export { handler as GET, handler as POST };
 
-// IMPORTANT: The 'declare module' blocks for NextAuth.js types
-// should reside in 'src/types/next-auth.d.ts' to ensure global type availability
-// and prevent redundancy. They have been removed from this file.

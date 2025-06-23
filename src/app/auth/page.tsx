@@ -1,17 +1,15 @@
-// src/app/auth/page.tsx
-'use client'; // This is a Client Component
+'use client'; 
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react'; // Import signIn function from NextAuth.js
 import { useRouter } from 'next/navigation'; // Import useRouter for client-side navigation
-import Link from 'next/link'; // For linking to other pages (e.g., if you had a separate register page)
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and register UI
+  const [isLogin, setIsLogin] = useState(true); // Toggle between login and register UI // NOTE: Currently on the backend our route doesnt care it just checks if the user exists, if not it creates one.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(''); // State to display authentication errors
-  const router = useRouter(); // Initialize router for redirection
+  const router = useRouter(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent default form submission
@@ -24,8 +22,7 @@ export default function AuthPage() {
       redirect: false, // Prevent NextAuth.js from redirecting automatically after sign-in
       email,
       password,
-      // You can add a 'callbackUrl' here if you want to redirect to a specific page after successful login
-      // Otherwise, we'll manually redirect using Next.js router
+     
     });
 
     if (result?.error) {
@@ -38,8 +35,8 @@ export default function AuthPage() {
         setError(result.error); // Display generic NextAuth.js error
       }
     } else if (result?.ok) {
-      // If sign-in was successful, redirect to the dashboard or home page
-      router.push('/dashboard'); // Redirect to dashboard
+      // If sign-in was successful, redirect to the dashboard
+      router.push('/dashboard'); 
       router.refresh(); // Force a refresh to update session state across the app
     }
   };
@@ -91,7 +88,7 @@ export default function AuthPage() {
             {isLogin ? 'Sign In' : 'Register'}
           </button>
         </form>
-
+        {/* NOTE: Potentially remove this functionality and just have a singular form for register/login */}
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
           {isLogin ? 'Need an account?' : 'Already have an account?'}{' '}
           <button

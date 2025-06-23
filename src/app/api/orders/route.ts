@@ -1,9 +1,6 @@
-// src/app/api/orders/route.ts
-// This route manages user orders (place new order and fetch order history).
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
+import { getSessionUser } from "@/lib/auth-server"; 
 
 // Define the expected shape for placing an order
 interface PlaceOrderPayload {
@@ -12,6 +9,7 @@ interface PlaceOrderPayload {
   discountCode?: string; // Optional discount code
 }
 
+// Create User Order
 // --- POST /api/orders (Place an Order) ---
 export async function POST(request: NextRequest) {
   // Authenticate the user using NextAuth.js session

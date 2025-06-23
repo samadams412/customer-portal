@@ -1,6 +1,3 @@
-// src/app/api/cart/[id]/route.ts
-// This route manages specific cart items (update quantity, remove item, fetch single item).
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
@@ -11,12 +8,13 @@ interface UpdateCartItemPayload {
   quantity?: number;
 }
 
+// Update Cart's cartItem
 // --- PUT /api/cart/[id] (Update Specific Cart Item Quantity) ---
 export async function PUT(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+  context: { params: Promise<{ id: string }> } 
 ) {
-  // FIX: Access id after awaiting context.params
+
   const { id: cartItemId } = await context.params;
 
   if (!isValidUUID(cartItemId)) {
@@ -62,6 +60,7 @@ export async function PUT(
   }
 }
 
+// Delete Cart's CartItem
 // --- DELETE /api/cart/[id] (Remove Specific Cart Item) ---
 export async function DELETE(
   request: NextRequest,
@@ -105,12 +104,12 @@ export async function DELETE(
   }
 }
 
+// Get Cart's cartItem
 // --- GET /api/cart/[id] (Fetch Single Cart Item) ---
 export async function GET(
     request: NextRequest,
-    context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+    context: { params: Promise<{ id: string }> } 
 ) {
-    // FIX: Access id after awaiting context.params
     const { id: cartItemId } = await context.params;
 
     if (!isValidUUID(cartItemId)) {

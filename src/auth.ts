@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
                 // You might add a default name here if your schema requires it, e.g., name: "New User"
               },
             });
-            console.log(`Successfully registered new user: ${user.email}`);
+            //console.log(`Successfully registered new user: ${user.email}`);
           } catch (createError) {
             console.error("Error creating new user during registration:", createError);
             // This error is typically for DB issues during creation, not email conflict if !user was true.

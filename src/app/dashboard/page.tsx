@@ -1,4 +1,3 @@
-// src/app/dashboard/page.tsx
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
@@ -164,7 +163,7 @@ export default function DashboardPage() {
         throw new Error(errorData.error || `Failed to delete address: ${res.status}`);
       }
 
-      console.log(`Address ${addressToDeleteId} deleted successfully.`);
+      //console.log(`Address ${addressToDeleteId} deleted successfully.`);
       fetchAddresses(); // Re-fetch addresses to update the list
       setIsDeleteDialogOpen(false); // Close dialog
       setAddressToDeleteId(null); // Clear ID
