@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         {/* Wrap your Navbar and page content with the Providers component.
             This ensures that any client components (like Navbar) have access
