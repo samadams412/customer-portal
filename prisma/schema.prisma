@@ -11,7 +11,7 @@ datasource db {
   
 }
 
-// User Model (Existing - with new relationships)
+// User
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
@@ -25,8 +25,7 @@ model User {
   orders    Order[]   // A user can place multiple orders
 }
 
-// Product Model (Existing)
-
+// Product
 model Product {
   id          String    @id @default(uuid())
   name        String
@@ -41,9 +40,8 @@ model Product {
   orderItems  OrderItem[] // A product can be in many order items (historical record)
 }
 
-// New: Address Model
+// Address
 // Stores multiple addresses for a user
-
 model Address {
   id         String    @id @default(uuid())
   street     String
@@ -65,9 +63,8 @@ model Address {
  // @@unique([userId, isDefault], name: "UserDefaultAddress", where: { isDefault: true })
 }
 
-// New: Cart Model
+// Cart
 // Represents a user's current shopping cart
-
 model Cart {
   id        String    @id @default(uuid())
   createdAt DateTime  @default(now())
@@ -81,9 +78,8 @@ model Cart {
   items     CartItem[] // A cart contains many cart items
 }
 
-// New: CartItem Model
+// CartItem
 // Represents a specific product and its quantity in a user's cart
-
 model CartItem {
   id        String    @id @default(uuid())
   quantity  Int       @default(1)
@@ -101,9 +97,8 @@ model CartItem {
   @@unique([cartId, productId])
 }
 
-// New: Order Model
+// Order
 // Represents a finalized purchase by a user
-
 model Order {
   id                String          @id @default(uuid())
   orderDate         DateTime        @default(now())
@@ -129,9 +124,8 @@ model Order {
   orderItems        OrderItem[]     // An order contains many order items
 }
 
-// New: OrderItem Model
+// OrderItem
 // Represents a specific product and its quantity in a completed order (snapshot)
-
 model OrderItem {
   id             String    @id @default(uuid())
   quantity       Int
@@ -146,6 +140,7 @@ model OrderItem {
   productId      String
   product        Product   @relation(fields: [productId], references: [id])
 }
+
 
 // Enums for Order fields
 enum DeliveryTypeEnum {

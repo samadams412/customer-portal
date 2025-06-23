@@ -1,4 +1,3 @@
-// api/products/[id]/route.ts
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { isValidUUID } from "@/lib/validators";
@@ -13,8 +12,6 @@ export async function GET(
   // This satisfies the runtime access and the compile-time 'Promise' expectation.
   const { id } = await context.params;
 
-  // FIX: Return 404 Not Found for invalid ID format instead of 400 Bad Request.
-  // This allows the client-side page.tsx to trigger Next.js's notFound() helper.
   if (!isValidUUID(id)) {
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }

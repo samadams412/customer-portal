@@ -1,6 +1,3 @@
-// src/app/api/cart/route.ts
-// This route manages user's shopping cart (fetch and add/update items).
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
@@ -12,6 +9,7 @@ interface CartItemPayload {
   quantity: number;
 }
 
+// Get User's Cart
 // --- GET /api/cart (Fetch User's Cart) ---
 export async function GET(request: NextRequest) {
   // Authenticate the user using NextAuth.js session
@@ -49,6 +47,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Update User's Cart
 // --- POST /api/cart (Add/Update Item in Cart) ---
 export async function POST(request: NextRequest) {
   // Authenticate the user using NextAuth.js session

@@ -1,10 +1,7 @@
-// src/app/api/address/[id]/route.ts
-// This route manages specific user addresses (update and delete).
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
-import { isValidUUID } from "@/lib/validators"; // Utility for UUID validation
+import { isValidUUID } from "@/lib/validators"; // Utility for UUID validation 
 
 // Define the expected shape for updating an address
 interface UpdateAddressPayload {
@@ -15,9 +12,10 @@ interface UpdateAddressPayload {
   isDefault?: boolean;
 }
 
+// Update User Address
 // --- PUT /api/address/[id] (Update Specific Address) ---
 export async function PUT(
-  request: NextRequest,
+  request: NextRequest,                        // lots of type errors with params
   context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
 ) {
   // FIX: Access id after awaiting context.params
@@ -74,12 +72,13 @@ export async function PUT(
   }
 }
 
+// Delete User Address
 // --- DELETE /api/address/[id] (Delete Specific Address) ---
 export async function DELETE(
   request: NextRequest,
-  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+  context: { params: Promise<{ id: string }> } 
 ) {
-  // FIX: Access id after awaiting context.params
+ 
   const { id: addressId } = await context.params;
 
   if (!isValidUUID(addressId)) {
