@@ -1,5 +1,5 @@
 'use client'; 
-
+// TODO: Logged in user shouldnt be able to hit the auth page again
 import { useState } from 'react';
 import { signIn } from 'next-auth/react'; // Import signIn function from NextAuth.js
 import { useRouter } from 'next/navigation'; // Import useRouter for client-side navigation
