@@ -3,7 +3,7 @@
 // It uses a singleton pattern to ensure only one instance of PrismaClient is created,
 // and extends it with Prisma Accelerate for optimized serverless performance.
 
-import { PrismaClient } from '@prisma/client/edge'; // IMPORTANT: Use '/edge' for serverless environments like Vercel
+import { PrismaClient } from '@prisma/client'; // FIX: Changed from '@prisma/client/edge' back to '@prisma/client'
 import { withAccelerate } from '@prisma/extension-accelerate'; // Import the Accelerate extension
 
 // Function to create and extend the PrismaClient instance

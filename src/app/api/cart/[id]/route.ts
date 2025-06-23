@@ -1,7 +1,9 @@
 // src/app/api/cart/[id]/route.ts
+// This route manages specific cart items (update quantity, remove item, fetch single item).
+
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { withAuth } from "@/lib/auth"; // Assuming withAuth middleware is available
+import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
 import { isValidUUID } from "@/lib/validators"; // Utility for UUID validation
 
 // Interface for the payload when updating a cart item
@@ -10,14 +12,12 @@ interface UpdateCartItemPayload {
 }
 
 // --- PUT /api/cart/[id] (Update Specific Cart Item Quantity) ---
-// Updates the quantity of a specific cart item for the authenticated user.
-export const PUT = withAuth(async (
+export async function PUT(
   request: NextRequest,
-  user,
-  // FIX: Apply Promise typing to context.params to resolve build errors
-  context: { params: Promise<{ id: string }> }
-) => {
-  const { id: cartItemId } = await context.params; // FIX: Await context.params
+  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+) {
+  // FIX: Access id after awaiting context.params
+  const { id: cartItemId } = await context.params;
 
   if (!isValidUUID(cartItemId)) {
     return NextResponse.json({ error: "Invalid cart item ID format" }, { status: 400 });
@@ -30,11 +30,16 @@ export const PUT = withAuth(async (
       return NextResponse.json({ error: "Invalid quantity provided" }, { status: 400 });
     }
 
+    // Authenticate the user using NextAuth.js session
+    const user = await getSessionUser(); // Fetch user inside the handler
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Find the cart item and ensure it belongs to the authenticated user's cart
     const existingCartItem = await prisma.cartItem.findUnique({
       where: { id: cartItemId },
-      include: {
-        cart: true
-      }
+      include: { cart: true } // Include cart to check userId
     });
 
     if (!existingCartItem || existingCartItem.cart.userId !== user.id) {
@@ -55,28 +60,31 @@ export const PUT = withAuth(async (
     }
     return NextResponse.json({ error: "Failed to update cart item" }, { status: 500 });
   }
-});
+}
 
 // --- DELETE /api/cart/[id] (Remove Specific Cart Item) ---
-// Removes a specific cart item from the authenticated user's cart.
-export const DELETE = withAuth(async (
+export async function DELETE(
   request: NextRequest,
-  user,
-  // FIX: Apply Promise typing to context.params to resolve build errors
-  context: { params: Promise<{ id: string }> }
-) => {
-  const { id: cartItemId } = await context.params; // FIX: Await context.params
+  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+) {
+  // FIX: Access id after awaiting context.params
+  const { id: cartItemId } = await context.params;
 
   if (!isValidUUID(cartItemId)) {
     return NextResponse.json({ error: "Invalid cart item ID format" }, { status: 400 });
   }
 
   try {
+    // Authenticate the user using NextAuth.js session
+    const user = await getSessionUser(); // Fetch user inside the handler
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Find the cart item and ensure it belongs to the authenticated user's cart
     const existingCartItem = await prisma.cartItem.findUnique({
       where: { id: cartItemId },
-      include: {
-        cart: true
-      }
+      include: { cart: true } // Include cart to check userId
     });
 
     if (!existingCartItem || existingCartItem.cart.userId !== user.id) {
@@ -95,27 +103,31 @@ export const DELETE = withAuth(async (
     }
     return NextResponse.json({ error: "Failed to delete cart item" }, { status: 500 });
   }
-});
+}
 
-// Optional: GET /api/cart/[id] to fetch a single cart item if needed (less common than fetching full cart)
-export const GET = withAuth(async (
+// --- GET /api/cart/[id] (Fetch Single Cart Item) ---
+export async function GET(
     request: NextRequest,
-    user,
-    // FIX: Apply Promise typing to context.params to resolve build errors
-    context: { params: Promise<{ id: string }> }
-) => {
-    const { id: cartItemId } = await context.params; // FIX: Await context.params
+    context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+) {
+    // FIX: Access id after awaiting context.params
+    const { id: cartItemId } = await context.params;
 
     if (!isValidUUID(cartItemId)) {
         return NextResponse.json({ error: "Invalid cart item ID format" }, { status: 400 });
     }
 
     try {
+        // Authenticate the user using NextAuth.js session
+        const user = await getSessionUser(); // Fetch user inside the handler
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
         const cartItem = await prisma.cartItem.findUnique({
             where: { id: cartItemId },
             include: {
                 product: true,
-                cart: true
+                cart: true // Include cart to verify ownership
             }
         });
 
@@ -131,4 +143,4 @@ export const GET = withAuth(async (
         }
         return NextResponse.json({ error: "Failed to retrieve cart item" }, { status: 500 });
     }
-});
+}

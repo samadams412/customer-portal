@@ -1,25 +1,29 @@
 // src/app/api/orders/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { withAuth } from "@/lib/auth"; // Assuming withAuth middleware is available
+import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
 import { isValidUUID } from "@/lib/validators"; // Utility for UUID validation
 
 // --- GET /api/orders/[id] (Fetch Single Order by ID) ---
 // Fetches a specific order for the authenticated user by its ID.
-export const GET = withAuth(async (
+export async function GET(
   request: NextRequest,
-  user,
-  // Using Promise typing for context.params to resolve potential build errors
-  // consistent with your other dynamic routes.
-  context: { params: Promise<{ id: string }> }
-) => {
-  const { id: orderId } = await context.params; // Get the order ID from dynamic route params
+  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+) {
+  // FIX: Access id after awaiting context.params
+  const { id: orderId } = await context.params;
 
   if (!isValidUUID(orderId)) {
     return NextResponse.json({ error: "Invalid order ID format" }, { status: 400 });
   }
 
   try {
+    // Authenticate the user using NextAuth.js session
+    const user = await getSessionUser(); // Fetch user inside the handler
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const order = await prisma.order.findUnique({
       where: {
         id: orderId,
@@ -47,6 +51,5 @@ export const GET = withAuth(async (
     }
     return NextResponse.json({ error: "Failed to retrieve order" }, { status: 500 });
   }
-});
-
+}
 

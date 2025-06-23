@@ -1,9 +1,10 @@
 // src/app/api/cart/route.ts
+// This route manages user's shopping cart (fetch and add/update items).
+
 import { NextRequest, NextResponse } from "next/server";
-// import { Prisma } from '@prisma/client'; // Keep if other Prisma namespace types are used
-import { prisma, ExtendedPrismaClient } from "@/lib/prisma"; // Import ExtendedPrismaClient
-import { Product } from "@/types/product"; // Keep Product import, it's used implicitly by 'include: { product: true }'
-import { withAuth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { getSessionUser } from "@/lib/auth-server"; // Import the new session helper
+import { Product } from "@/types/product"; // Keep Product import if needed for type reference
 
 // Interface for the payload when adding/updating a cart item
 interface CartItemPayload {
@@ -12,8 +13,13 @@ interface CartItemPayload {
 }
 
 // --- GET /api/cart (Fetch User's Cart) ---
-// Fetches the authenticated user's cart with all its items and the associated product details.
-export const GET = withAuth(async (request: NextRequest, user) => {
+export async function GET(request: NextRequest) {
+  // Authenticate the user using NextAuth.js session
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const cart = await prisma.cart.findUnique({
       where: {
@@ -22,14 +28,14 @@ export const GET = withAuth(async (request: NextRequest, user) => {
       include: {
         items: {
           include: {
-            product: true, // Product type is implicitly used here for the shape of the returned data
+            product: true, // Include product details for each item
           },
         },
       },
     });
 
+    // If no cart exists for the user, return an empty cart structure
     if (!cart) {
-      // If no cart exists, return an empty cart structure
       return NextResponse.json({ userId: user.id, items: [] }, { status: 200 });
     }
 
@@ -41,11 +47,16 @@ export const GET = withAuth(async (request: NextRequest, user) => {
     }
     return NextResponse.json({ error: "Failed to fetch cart" }, { status: 500 });
   }
-});
+}
 
 // --- POST /api/cart (Add/Update Item in Cart) ---
-// Adds a new product to the cart or updates the quantity of an existing item.
-export const POST = withAuth(async (request: NextRequest, user) => {
+export async function POST(request: NextRequest) {
+  // Authenticate the user using NextAuth.js session
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { productId, quantity }: CartItemPayload = await request.json();
 
@@ -53,10 +64,8 @@ export const POST = withAuth(async (request: NextRequest, user) => {
       return NextResponse.json({ error: "Invalid product ID or quantity" }, { status: 400 });
     }
 
-    // 1. Find or Create User's Cart
-    // This transaction ensures atomicity: either cart is found/created, or the whole operation fails.
-    // FIX: Use 'any' type for prismaTx as a workaround for complex type inference issues with Accelerate extension in transactions.
-    const cart = await prisma.$transaction(async (prismaTx: any) => { 
+    // 1. Find or Create User's Cart (in a transaction for atomicity)
+    const cart = await prisma.$transaction(async (prismaTx: { cart: { findUnique: (arg0: { where: { userId: string; }; }) => any; create: (arg0: { data: { userId: string; }; }) => any; }; }) => {
       let userCart = await prismaTx.cart.findUnique({
         where: { userId: user.id },
       });
@@ -72,7 +81,7 @@ export const POST = withAuth(async (request: NextRequest, user) => {
       return userCart;
     });
 
-    // 2. Check if product exists and is in stock (optional, based on business logic)
+    // 2. Check if product exists and is in stock
     const product = await prisma.product.findUnique({
       where: { id: productId },
     });
@@ -80,38 +89,34 @@ export const POST = withAuth(async (request: NextRequest, user) => {
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
-    // You might add a check here for product.inStock if you don't allow out-of-stock items in cart.
-    // E.g., if (!product.inStock) { return NextResponse.json({ error: "Product is out of stock" }, { status: 409 }); }
-
+    // Optional: Check if product.inStock and throw error if not
 
     // 3. Find or Update CartItem
     const existingCartItem = await prisma.cartItem.findUnique({
       where: {
-        cartId_productId: { // Unique constraint defined on CartItem model for (cartId, productId)
+        cartId_productId: { // Composite unique key for cart item
           cartId: cart.id,
           productId: productId,
         },
       },
     });
 
-    let updatedCartItemResult; 
+    let updatedCartItemResult;
     if (existingCartItem) {
-      // Update quantity if item already exists
       updatedCartItemResult = await prisma.cartItem.update({
         where: { id: existingCartItem.id },
-        data: { quantity: existingCartItem.quantity + quantity },
-        include: { product: true }, // Include product for response
+        data: { quantity: existingCartItem.quantity + quantity }, // Increment quantity
+        include: { product: true },
       });
       console.log(`Updated quantity for cart item ${updatedCartItemResult.id}`);
     } else {
-      // Add new item to cart
       updatedCartItemResult = await prisma.cartItem.create({
         data: {
           cartId: cart.id,
           productId: productId,
           quantity: quantity,
         },
-        include: { product: true }, // Include product for response
+        include: { product: true },
       });
       console.log(`Added new cart item ${updatedCartItemResult.id}`);
     }
@@ -136,4 +141,4 @@ export const POST = withAuth(async (request: NextRequest, user) => {
     }
     return NextResponse.json({ error: "Failed to add item to cart" }, { status: 500 });
   }
-});
+}
