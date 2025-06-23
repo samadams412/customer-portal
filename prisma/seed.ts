@@ -52,14 +52,14 @@ async function main() {
   // 3. Create Products (ensure enough for testing different cart/order scenarios)
   const productsData = [
     { name: "Organic Apples", price: 3.99, imageUrl: 'https://images.pexels.com/photos/2487443/pexels-photo-2487443.jpeg', inStock: true },
-    { name: "Whole Milk (Gallon)", price: 4.50, imageUrl: 'https://images.unsplash.com/photo-1634141510639-d691d86f47be?q=80&w=1064&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
-    { name: "Artisan Bread", price: 2.75, imageUrl: 'https://plus.unsplash.com/premium_photo-1666675709302-8630e759fed5?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
-    { name: "Cage-Free Eggs (Dozen)", price: 5.20, imageUrl: 'https://images.unsplash.com/photo-1506976785307-8732e854ad03?q=80&w=1043&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: false },
-    { name: "Avocado (Each)", price: 1.50, imageUrl: 'https://images.unsplash.com/photo-1612506266679-606568a33215?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
-    { name: "Salmon Fillet (LB)", price: 12.99, imageUrl: 'https://images.unsplash.com/photo-1559058789-672da06263d8?q=80&w=1167&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
-    { name: "Organic Spinach", price: 3.20, imageUrl: 'https://images.unsplash.com/photo-1574316071802-0d684efa7bf5?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
-    { name: "Ground Coffee (Bag)", price: 8.99, imageUrl: 'https://images.unsplash.com/photo-1619615174792-a5edcfeafdfe?q=80&w=1325&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
-    { name: "Blueberries (Pint)", price: 4.99, imageUrl: 'https://images.unsplash.com/photo-1597774681009-f8679cf72348?q=80&w=1287&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', inStock: true },
+    { name: "Whole Milk (Gallon)", price: 4.50, imageUrl: 'https://cdn.pixabay.com/photo/2017/07/05/15/41/milk-2474993_1280.jpg', inStock: true },
+    { name: "Artisan Bread", price: 2.75, imageUrl: 'https://cdn.pixabay.com/photo/2018/06/10/20/30/bread-3467243_1280.jpg', inStock: true },
+    { name: "Cage-Free Eggs (Dozen)", price: 5.20, imageUrl: 'https://cdn.pixabay.com/photo/2022/07/26/13/55/egg-7345934_1280.jpg', inStock: false },
+    { name: "Avocado (Each)", price: 1.50, imageUrl: 'https://cdn.pixabay.com/photo/2015/08/10/12/02/avocados-882635_1280.jpg', inStock: true },
+    { name: "Salmon Fillet (LB)", price: 12.99, imageUrl: 'https://cdn.pixabay.com/photo/2017/05/19/13/06/salmon-2326479_1280.jpg', inStock: true },
+    { name: "Organic Spinach", price: 3.20, imageUrl: 'https://cdn.pixabay.com/photo/2018/06/08/22/16/spinach-3463248_1280.jpg', inStock: true },
+    { name: "Ground Coffee (Bag)", price: 8.99, imageUrl: 'https://cdn.pixabay.com/photo/2018/06/06/10/13/coffee-beans-3457587_1280.jpg', inStock: true },
+    { name: "Blueberries (Pint)", price: 4.99, imageUrl: 'https://cdn.pixabay.com/photo/2020/07/18/13/01/blueberry-5417154_1280.jpg', inStock: true },
     { name: "Cheddar Cheese (Block)", price: 7.50, imageUrl: 'https://as2.ftcdn.net/v2/jpg/00/75/52/99/1000_F_75529950_twH3BeBeXBTbXxsf8CiVkJBRsze9BBHv.jpg', inStock: true },
   ];
   const createdProducts: Product[] = []; // Explicitly type as Product[]

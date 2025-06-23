@@ -6,12 +6,20 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'picsum.photos',
+        hostname: 'images.pexels.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'as2.ftcdn.net',
+        port: '',
         pathname: '/**',
       },
        {
         protocol: 'https',
-        hostname: 'placehold.co',
+        hostname: 'cdn.pixabay.com',
+        port: '',
         pathname: '/**',
       },
     ],
