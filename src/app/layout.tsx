@@ -23,7 +23,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} transition-colors duration-500`}>
+        
         {/* Wrap your Navbar and page content with the Providers component.
             This ensures that any client components (like Navbar) have access
             to the NextAuth.js session context provided by SessionProvider. */}
@@ -43,3 +44,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils"; // Utility for concatenating class names
 import { useSession, signOut } from "next-auth/react"; // Import useSession and signOut from NextAuth.js
+import { Toggle } from './ui/toggleB'; // Adding dark/light mode button
 
 export function Navbar() {
   // useSession hook provides session data and status (loading, authenticated, unauthenticated)
@@ -16,7 +17,9 @@ export function Navbar() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="text-xl font-bold text-blue-600 dark:text-blue-400">
           Grocery Portal
+        
         </Link>
+       
 
         <NavigationMenu>
           <NavigationMenuList className="flex space-x-4">
@@ -68,6 +71,7 @@ export function Navbar() {
                 </NavigationMenuItem>
               </>
             )}
+             <Toggle />
           </NavigationMenuList>
         </NavigationMenu>
       </div>
