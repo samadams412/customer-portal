@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} "transition-color duration-500"`}>
+      <body className={`${inter.className} transition-colors duration-500`}>
         
         {/* Wrap your Navbar and page content with the Providers component.
             This ensures that any client components (like Navbar) have access
