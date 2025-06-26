@@ -5,9 +5,10 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  imageUrl?: string;
+  imageUrl: string | null; // Changed from imageUrl?: string; to imageUrl: string | null;
   inStock: boolean;
-  createdAt: string; // Assuming this comes as a string from your API/Prisma
+  createdAt: string; 
+  updatedAt: string; 
 }
 
 export interface Address {
