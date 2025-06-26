@@ -1,3 +1,4 @@
+/* src/app/global.css */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -41,23 +42,29 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  /* If you add custom colors, remember to map them here too */
 }
 
 :root {
   --radius: 0.625rem;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0); /* White */
+  --card-foreground: oklch(0.145 0 0); /* Near Black */
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.205 0 0); /* Dark Grey */
+  --primary-foreground: oklch(0.985 0 0); /* Off White */
+
+  /* --- IN STOCK (GREEN) --- */
+  --secondary: oklch(0.45 0.15 140); /* A legible green for 'In Stock' */
+  --secondary-foreground: oklch(0.985 0 0); /* Off White text on secondary if secondary is used as a background */
+
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  /* --- OUT OF STOCK (RED) --- */
+  --destructive: oklch(0.577 0.245 27.325); /* A clear red for 'Out of Stock' */
+
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -76,6 +83,8 @@
   --sidebar-ring: oklch(0.708 0 0);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
+
+  /* Add any new custom colors here for light mode */
 }
 
 .dark {
@@ -87,13 +96,18 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+
+  /* --- IN STOCK (GREEN) --- */
+  --secondary: oklch(80.048% 0.26403 141.463); /* A brighter legible green for 'In Stock' in dark mode */
+  --secondary-foreground: oklch(0.145 0 0); /* Dark text on secondary if secondary is used as a background in dark mode */
+
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
+  /* --- OUT OF STOCK (RED) --- */
+  --destructive: oklch(0.704 0.191 22.216); /* A clear red for 'Out of Stock' in dark mode */
+
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -110,6 +124,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Add any new custom colors here for dark mode */
 }
 
 @layer base {
