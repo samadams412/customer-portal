@@ -13,11 +13,11 @@ import { useAddresses } from '@/hooks/useAddresses';
 import { useOrders } from '@/hooks/useOrders';
 
 // Import modular components
-import { UserProfileSection } from '@/components/UserProfileSection'; // New profile section
-import { AddressListSection } from '@/components/AddressListSection'; // New address list section
-import { OrderListSection } from '@/components/OrderListSection';     // New order list section
-import { ConfirmationDialog } from '@/components/confirmation-dialog'; // Existing dialog
-import { AddressFormModal } from '@/components/address-form-modal';   // Existing address form modal
+import { UserProfileSection } from '@/components/app-ui/UserProfileSection'; // New profile section
+import { AddressListSection } from '@/components/app-ui/AddressListSection'; // New address list section
+import { OrderListSection } from '@/components/app-ui/OrderListSection';     // New order list section
+import { ConfirmationDialog } from '@/components/app-ui/ConfirmationDialog'; // Existing dialog
+import { AddressFormModal } from '@/components/app-ui/AddressFormModal';   // Existing address form modal
 import { Button } from "@/components/ui/button"; // Shadcn button
 
 

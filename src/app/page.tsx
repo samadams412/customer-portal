@@ -1,15 +1,15 @@
 // src/app/page.tsx
 import Link from "next/link"; // Import Link for navigation
 import { Button } from "@/components/ui/button"; // Assuming this is your Shadcn UI Button
-import HomePageAnimation from '@/components/ui/homePageAnimation'; //Adding product animation
-import { images } from '@/components/ui/images';
+// import HomePageAnimation from '@/components/app-ui/HomePageAnimation'; //Adding product animation
+// import { images } from '@/components/ui/images';
 
 
 export default function Home() {
   return (
     // Use Tailwind flexbox utilities to center content vertically and horizontally
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 p-4">
-      <HomePageAnimation I ={images}/>
+      {/* <HomePageAnimation I ={images}/> */}
       <h1 className="text-6xl sm:text-6xl md:text-6xl font-extrabold text-center mb-8 drop-shadow-xl leading-tight">
         Welcome to Your
       <p className="text-5xl text-blue-600 dark:text-blue-400">Grocery Portal</p>
