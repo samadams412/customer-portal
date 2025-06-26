@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils"; // Utility for concatenating class names
 import { useSession, signOut } from "next-auth/react"; // Import useSession and signOut from NextAuth.js
-import { Toggle } from './ui/toggleB'; // Adding dark/light mode button
+import { Toggle } from './ToggleTheme'; // Adding dark/light mode button
 
 export function Navbar() {
   // useSession hook provides session data and status (loading, authenticated, unauthenticated)

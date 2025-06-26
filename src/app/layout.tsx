@@ -4,7 +4,7 @@
 
 import './globals.css'; // Your global styles
 import { Inter } from 'next/font/google'; // Assuming Inter font is used
-import { Navbar } from '@/components/Navbar'; // Your Navbar component (will be client component)
+import { Navbar } from '@/components/app-ui/Navbar'; // Your Navbar component (will be client component)
 import Providers from '@/app/providers'; // Import the new Providers client component
 import { ThemeProvider } from 'next-themes';
 

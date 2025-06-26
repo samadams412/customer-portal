@@ -4,7 +4,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AddressCard } from "@/components/address-card"; // Import the AddressCard component
+import { AddressCard } from "@/components/app-ui/AddressCard"; // Import the AddressCard component
 import { Address } from "@/types/product"; // Import the Address interface
 
 interface AddressListSectionProps {
