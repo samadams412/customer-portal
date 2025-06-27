@@ -25,12 +25,18 @@ export async function POST(req: NextRequest) {
   },
   quantity: item.quantity,
 }));
+
+  const baseUrl =
+    process.env.VERCEL === "1"
+      ? "https://customer-portal-alpha-nine.vercel.app"
+      : "http://localhost:3000";
+
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
     line_items,
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`,
-    cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/cancel`,
+    success_url: `${baseUrl}/dashboard`,
+    cancel_url: `${baseUrl}/cancel`,
     metadata: {
       userId: user.id,
       cartItems: JSON.stringify(cartItems),
