@@ -7,7 +7,7 @@ import { Product } from '@/types/interface';
 // FIX: Import the AddToCartForm component
 import { AddToCartForm } from '@/components/app-ui/cart/AddToCartForm';
 import { formatPrice } from '@/lib/utils'; // Assuming formatPrice is in utils
-
+import Image from 'next/image'
 interface ProductCardProps {
   product: Product;
 }
@@ -20,19 +20,19 @@ export function ProductCard({ product }: ProductCardProps) {
                     transform transition-transform duration-300 hover:scale-105 
                     flex flex-col p-4 border border-border space-y-4"> {/* Added border and spacing */}
       {/* Product Image */}
-      <div className="relative w-full h-48 overflow-hidden rounded-md">
-        <img
+     <div className="relative w-full h-48 overflow-hidden rounded-md">
+        <Image
           src={product.imageUrl || `https://placehold.co/400x300/F0F0F0/ADADAD?text=${encodeURIComponent(product.name)}`}
           alt={product.name}
-          className="w-full h-full object-cover"
-          loading="lazy"
-          onError={(e) => {
-            // Fallback to a placeholder image if the image fails to load
-            e.currentTarget.src = `https://placehold.co/400x300/F0F0F0/ADADAD?text=${encodeURIComponent(product.name)}`;
-            e.currentTarget.onerror = null; // Prevent infinite loop if fallback also fails
+          fill
+          className="object-cover rounded-md"
+          sizes="(max-width: 768px) 100vw, 400px"
+          onError={() => {
+            // Note: Next.js <Image> doesn't support onError directly with external URLs,
+            // so you'll need to ensure fallback handling is done in logic (e.g. on the product.imageUrl)
           }}
         />
-      </div>
+    </div>
 
       {/* Product Details */}
       <div className="flex-grow flex flex-col justify-between">

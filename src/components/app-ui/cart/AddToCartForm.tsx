@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useCart } from '@/context/cart-context';
-import { Toaster } from '@/components/ui/sonner'; // or use shadcn's toast if you prefer
 import { Product } from '@/types/interface';
 import { toast } from 'sonner';
 

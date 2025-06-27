@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
 // Get User Address
 // --- GET /api/address (Fetch All Addresses for User) ---
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   // Authenticate the user using NextAuth.js session
   const user = await getSessionUser();
   if (!user) {

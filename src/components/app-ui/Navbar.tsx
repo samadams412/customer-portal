@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { useSession, signOut } from "next-auth/react";
 import { Toggle } from './ToggleTheme'; // Corrected import from Toggle to ThemeToggle
 import { CartSheet } from '@/components/app-ui/cart/CartSheet';
-import { Menu, X } from 'lucide-react'; // Import Menu (hamburger) and X (close) icons
+import { Menu } from 'lucide-react'; // Import Menu (hamburger) and X (close) icons
 import { Separator } from '../ui/separator';
 
 export function Navbar() {
