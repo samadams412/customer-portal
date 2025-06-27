@@ -23,7 +23,7 @@ export function CartSheet() {
   const { cartItems, cartCount, cartTotal, clearCart } = useCart();
 
 const handleCheckout = async () => {
-  console.log(cartItems);
+  
   try {
     const res = await fetch('/api/checkout', {
       method: 'POST',
@@ -36,7 +36,8 @@ const handleCheckout = async () => {
       toast.error(`Checkout failed: ${error.error}`);
       return;
     }
-
+    // Clear cart after checking out
+    clearCart();
     const { url } = await res.json();
     if (url) {
       window.location.href = url; // Redirect to Stripe Checkout

@@ -34,9 +34,7 @@ export function CartProvider({ children }: CartProviderProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true); // True initially while loading from localStorage
   const { data: session, status } = useSession(); // Get session data and status from NextAuth
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const openCart = () => setIsCartOpen(true);
-  const closeCart = () => setIsCartOpen(false);
+  
 
   
   // --- Load Cart from Local Storage on Mount ---
@@ -78,8 +76,8 @@ export function CartProvider({ children }: CartProviderProps) {
     }
   }, [status, isLoading]); // Re-run when session status or loading state changes
 
+  // TODO: Add functionality to clear cart items after checkout redirect.
   // --- Cart Operations (Local State Management) ---
-
 const addToCart = useCallback((product: Product, quantity: number) => {
   if (quantity <= 0) {
     console.warn(`Attempted to add product ${product.id} with invalid quantity: ${quantity}`);

@@ -23,13 +23,13 @@ export interface Address {
   userId: string;
 }
 
-// FIX: Added CartItem interface
+
 export interface CartItem {
   id: string; // Client-generated unique ID for this cart entry (e.g., using crypto.randomUUID())
   quantity: number;
   productId: string;
   product: Product; // Include nested product details directly
-  // Removed: cartId field as it's no longer persisted in the backend
+
 }
 
 

@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       // The authorize function handles the authentication logic for both login and registration.
-      async authorize(credentials, req) {
+      async authorize(credentials, _req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and password are required.");
         }

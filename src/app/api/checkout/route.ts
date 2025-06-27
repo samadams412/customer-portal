@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
     success_url: `${baseUrl}/dashboard`,
     cancel_url: `${baseUrl}/cancel`,
     payment_intent_data: {
+      // Here we send the orderId in metadata 
+      // Stripe webhook will use this to update the order
       metadata: {
         orderId: newOrder.id,
       },
