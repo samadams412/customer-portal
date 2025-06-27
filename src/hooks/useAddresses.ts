@@ -1,9 +1,9 @@
 // src/hooks/useAddresses.ts
 // Custom hook to manage address data, loading states, errors, and associated modal/dialog logic.
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react'; // Import useSession for authentication status
-import { Address } from '@/types/product'; // Import Address interface
+import { Address } from '@/types/interface'; // Import Address interface
 
 interface UseAddressesReturn {
   addresses: Address[];

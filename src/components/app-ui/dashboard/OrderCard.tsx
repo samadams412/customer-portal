@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Order, OrderItem } from "@/types/product"; // Import Order and OrderItem interfaces
+import { Order, OrderItem } from "@/types/interface"; // Import Order and OrderItem interfaces
 
 interface OrderCardProps {
   order: Order;

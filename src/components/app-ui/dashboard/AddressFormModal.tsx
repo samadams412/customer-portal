@@ -18,7 +18,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Address } from "@/types/product"; // Import Address interface
+import { Address } from "@/types/interface"; // Import Address interface
 
 // Define the schema for address form validation using Zod
 const addressFormSchema = z.object({

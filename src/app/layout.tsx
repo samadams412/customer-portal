@@ -7,6 +7,8 @@ import { Inter } from 'next/font/google'; // Assuming Inter font is used
 import { Navbar } from '@/components/app-ui/Navbar'; // Your Navbar component (will be client component)
 import Providers from '@/app/providers'; // Import the new Providers client component
 import { ThemeProvider } from 'next-themes';
+import { CartProvider } from '@/context/cart-context';
+import { Toaster } from '@/components/ui/sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -36,8 +38,11 @@ export default function RootLayout({
              enableSystem
              disableTransitionOnChange
            >
+            <CartProvider>
             <Navbar /> {/* Your Navbar, now correctly nested within SessionProvider's client boundary */}
             {children} {/* Your page content */}
+            <Toaster />
+            </CartProvider>
           </ThemeProvider>
         </Providers>
       </body>

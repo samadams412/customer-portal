@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react'; // Import useSession for authentication status
-import { Order } from '@/types/product'; // Import Order interface
+import { Order } from '@/types/interface'; // Import Order interface
 
 interface UseOrdersReturn {
   orders: Order[];

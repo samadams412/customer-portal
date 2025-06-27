@@ -1,9 +1,9 @@
 // src/app/product/ProductInteractiveList.tsx
 "use client"
 import React, { useState, useEffect } from 'react';
-import { Product } from '@/types/product';
+import { Product } from '@/types/interface';
 // Import ProductCard from its dedicated file in the components directory
-import { ProductCard } from '@/components/app-ui/ProductCard';
+import { ProductCard } from '@/components/app-ui/products/ProductCard';
 
 // ProductInteractiveList Component: Handles search, sort, and displays product cards
 const ProductInteractiveList: React.FC = () => {

@@ -13,11 +13,11 @@ import { useAddresses } from '@/hooks/useAddresses';
 import { useOrders } from '@/hooks/useOrders';
 
 // Import modular components
-import { UserProfileSection } from '@/components/app-ui/UserProfileSection'; // New profile section
-import { AddressListSection } from '@/components/app-ui/AddressListSection'; // New address list section
-import { OrderListSection } from '@/components/app-ui/OrderListSection';     // New order list section
-import { ConfirmationDialog } from '@/components/app-ui/ConfirmationDialog'; // Existing dialog
-import { AddressFormModal } from '@/components/app-ui/AddressFormModal';   // Existing address form modal
+import { UserProfileSection } from '@/components/app-ui/dashboard/UserProfileSection'; // New profile section
+import { AddressListSection } from '@/components/app-ui/dashboard/AddressListSection'; // New address list section
+import { OrderListSection } from '@/components/app-ui/dashboard/OrderListSection';     // New order list section
+import { ConfirmationDialog } from '@/components/app-ui/dashboard/ConfirmationDialog'; // Existing dialog
+import { AddressFormModal } from '@/components/app-ui/dashboard/AddressFormModal';   // Existing address form modal
 import { Button } from "@/components/ui/button"; // Shadcn button
 
 
@@ -127,6 +127,7 @@ export default function DashboardPage() {
       />
 
       {/* Confirmation Dialog - Remains here, controlled by useAddresses hook's state */}
+      {/* TODO: Check if address is properly being deleted. */}
       <ConfirmationDialog
         isOpen={isDeleteDialogOpen}
         onConfirm={executeDeleteAddress}

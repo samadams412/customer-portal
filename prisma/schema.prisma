@@ -8,7 +8,6 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  
 }
 
 // User
@@ -18,10 +17,10 @@ model User {
   password  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  
-  // Relationships to new models
+
+  // Relationships to other models
   addresses Address[] // A user can have multiple addresses
-  cart      Cart?     // A user has one cart (optional, created on first item if not present)
+  // Removed: cart      Cart?     // No longer persisting cart in DB
   orders    Order[]   // A user can place multiple orders
 }
 
@@ -35,8 +34,8 @@ model Product {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  // Relationships to new models
-  cartItems   CartItem[] // A product can be in many cart items
+  // Relationships
+  // Removed: cartItems   CartItem[] // No longer persisting cart items in DB
   orderItems  OrderItem[] // A product can be in many order items (historical record)
 }
 
@@ -48,67 +47,30 @@ model Address {
   city       String
   state      String
   zipCode    String
-  isDefault  Boolean   @default(false) // Flag for a user's default address
+  isDefault  Boolean   @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  // Relationship to User (Foreign Key)
+  // Relationship to User
   userId     String
   user       User      @relation(fields: [userId], references: [id])
 
-  // Relationship to Order (An address can be used for multiple orders as a shipping address)
-  orders     Order[]   // Orders that used this address as shipping address
-
-  // It correctly allows multiple non-default addresses (isDefault: false) for the same user.
- // @@unique([userId, isDefault], name: "UserDefaultAddress", where: { isDefault: true })
-}
-
-// Cart
-// Represents a user's current shopping cart
-model Cart {
-  id        String    @id @default(uuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  // Relationship to User (One-to-one, ensures a user has only one active cart)
-  userId    String    @unique
-  user      User      @relation(fields: [userId], references: [id])
-
-  // Relationship to CartItem
-  items     CartItem[] // A cart contains many cart items
-}
-
-// CartItem
-// Represents a specific product and its quantity in a user's cart
-model CartItem {
-  id        String    @id @default(uuid())
-  quantity  Int       @default(1)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  // Relationships
-  cartId    String
-  cart      Cart      @relation(fields: [cartId], references: [id])
-
-  productId String
-  product   Product   @relation(fields: [productId], references: [id])
-
-  // Ensures a product appears only once in a given cart
-  @@unique([cartId, productId])
+  // Relationship to Order (optional, if this address is used for shipping)
+  orders     Order[]   // An address can be used for multiple orders as shipping address
 }
 
 // Order
-// Represents a finalized purchase by a user
+// Represents a completed order (historical record)
 model Order {
   id                String          @id @default(uuid())
   orderDate         DateTime        @default(now())
-  totalAmount       Float           // Final amount including tax and discounts
-  subtotalAmount    Float           // Sum of product prices * quantities, before tax/discount
-  taxAmount         Float           // Calculated tax amount
-  discountCode      String?         // The discount code string if applied
-  discountAmount    Float?          // The actual amount saved by discount
-  deliveryType      DeliveryTypeEnum // Enum for delivery or pickup
-  status            OrderStatusEnum // Enum for order status lifecycle
+  totalAmount       Float
+  subtotalAmount    Float
+  taxAmount         Float
+  discountCode      String?
+  discountAmount    Float?
+  deliveryType      DeliveryTypeEnum
+  status            OrderStatusEnum
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 
@@ -117,7 +79,7 @@ model Order {
   user              User            @relation(fields: [userId], references: [id])
 
   // Relationship to Shipping Address (Optional, if deliveryType is DELIVERY)
-  shippingAddressId String?         
+  shippingAddressId String?
   shippingAddress   Address?        @relation(fields: [shippingAddressId], references: [id])
 
   // Relationship to OrderItems
@@ -152,6 +114,6 @@ enum OrderStatusEnum {
   PENDING      // Initial state, e.g., after order placed, before payment confirmed or processing begins
   PROCESSING   // Order is being prepared/fulfilled
   SHIPPED      // Order has left the warehouse/store for delivery (if applicable)
-  DELIVERED    // Order has been received by the customer
-  CANCELLED    // Order was cancelled
+  DELIVERED    // Order has been received
+  CANCELLED    // Order has been cancelled
 }
