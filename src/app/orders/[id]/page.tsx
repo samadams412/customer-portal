@@ -6,7 +6,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react'; // For authentication status
-import { Order, OrderItem } from '@/types/product'; // Import relevant types
+import { Order, OrderItem } from '@/types/interface'; // Import relevant types
 import { useAuthRedirect } from '@/hooks/useAuthRedirect'; // Import the useAuthRedirect hook
 
 import { Skeleton } from '@/components/ui/skeleton';

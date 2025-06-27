@@ -3,8 +3,8 @@
 // It handles loading, error, and empty states.
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { OrderCard } from "@/components/app-ui/OrderCard"; // Import the OrderCard component
-import { Order } from "@/types/product"; // Import the Order interface
+import { OrderCard } from "@/components/app-ui/dashboard/OrderCard"; // Import the OrderCard component
+import { Order } from "@/types/interface"; // Import the Order interface
 
 interface OrderListSectionProps {
   orders: Order[];

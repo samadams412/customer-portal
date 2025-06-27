@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Address } from "@/types/product"; // Import the Address interface
+import { Address } from "@/types/interface"; // Import the Address interface
 
 interface AddressCardProps {
   address: Address;

@@ -25,12 +25,11 @@ export interface Address {
 
 // FIX: Added CartItem interface
 export interface CartItem {
-  id: string;
+  id: string; // Client-generated unique ID for this cart entry (e.g., using crypto.randomUUID())
   quantity: number;
-  cartId: string;
   productId: string;
-  product: Product; // Include nested product details
-  // Add other fields from your Prisma CartItem model like createdAt, updatedAt if needed for client-side
+  product: Product; // Include nested product details directly
+  // Removed: cartId field as it's no longer persisted in the backend
 }
 
 

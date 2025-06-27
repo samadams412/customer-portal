@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-import { Product } from "@/types/product"; // Assuming product.ts is in types folder
+import { Product } from "@/types/interface"; // Assuming product.ts is in types folder
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

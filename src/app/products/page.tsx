@@ -1,6 +1,6 @@
 // src/app/product/page.tsx
 import React from 'react';
-import ProductInteractiveList from '@/components/app-ui/ProductInteractiveList'
+import ProductInteractiveList from '@/components/app-ui/products/ProductInteractiveList'
 
 // Define the main page component for the products route
 const ProductPage: React.FC = () => {
