@@ -3,9 +3,8 @@
 
 import * as React from "react";
 import Image from "next/image";
-// FIX: Import CartItem and Product from your types
 import { CartItem as CartItemType } from "@/types/interface"; // Alias to avoid name conflict
-import { formatPrice } from "@/lib/utils"; // Your utility for price formatting
+import { formatPrice } from "@/lib/utils"; 
 import { CartItemActions } from "./CartItemActions"; // Import CartItemActions
 
 interface CartItemProps {

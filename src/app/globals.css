@@ -46,6 +46,8 @@
 }
 
 :root {
+  --accent-brand: oklch(0.85 0.18 70); /* Sunny orange */
+  --accent-brand-foreground: oklch(0.145 0 0); /* Dark text for contrast */
   --radius: 0.625rem;
   --card: oklch(1 0 0); /* White */
   --card-foreground: oklch(0.145 0 0); /* Near Black */
@@ -53,10 +55,20 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0); /* Dark Grey */
   --primary-foreground: oklch(0.985 0 0); /* Off White */
+  --info: oklch(0.9 0.1 240);              /* Calm blue for neutral info or alerts */
+  --warning: oklch(0.85 0.18 80);          /* Warm yellow for low-stock or caution */
+  --highlight: oklch(0.98 0.1 120);        /* Greenish-yellow for deals/promos */
+  --category-produce: oklch(0.78 0.18 150);
+  --category-dairy: oklch(0.95 0.05 100);
+  --category-meat: oklch(0.7 0.2 25);
+  --category-bakery: oklch(0.85 0.15 75);
 
   /* --- IN STOCK (GREEN) --- */
-  --secondary: oklch(0.45 0.15 140); /* A legible green for 'In Stock' */
+  --secondary: oklch(78.512% 0.25454 143.58); /* A legible green for 'In Stock' */
   --secondary-foreground: oklch(0.985 0 0); /* Off White text on secondary if secondary is used as a background */
+  --action-green: oklch(0.83 0.21 145); /* Vibrant fresh green */
+  --action-green-foreground: oklch(0.145 0 0); /* Dark readable text */
+
 
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -96,6 +108,11 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
+  --accent-brand: oklch(0.78 0.22 70); /* Slightly darker orange */
+  --accent-brand-foreground: oklch(0.985 0 0); /* Light text for contrast */
+  --action-green: oklch(0.72 0.23 145); /* Slightly darker but vibrant */
+  --action-green-foreground: oklch(0.985 0 0); /* Light readable text */
+
 
   /* --- IN STOCK (GREEN) --- */
   --secondary: oklch(80.048% 0.26403 141.463); /* A brighter legible green for 'In Stock' in dark mode */

@@ -45,6 +45,22 @@ module.exports = {
         'brand-green': {
           DEFAULT: "oklch(var(--brand-green))",
         },
+        warning: {
+          DEFAULT: "oklch(var(--warning))",
+          foreground: "oklch(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "oklch(var(--info))",
+          foreground: "oklch(var(--info-foreground))",
+      },
+      'accent-brand': {
+          DEFAULT: "oklch(var(--accent-brand))",
+          foreground: "oklch(var(--accent-brand-foreground))",
+      },
+      'action-green': {
+        DEFAULT: "oklch(var(--action-green))",
+        foreground: "oklch(var(--action-green-foreground))",
+      },
         // --------------------------------------------------
       },
       borderRadius: {

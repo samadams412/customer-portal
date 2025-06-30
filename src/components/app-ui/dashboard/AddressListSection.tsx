@@ -25,10 +25,10 @@ export function AddressListSection({
   onDeleteAddress,
 }: AddressListSectionProps) {
   return (
-    <section className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+    <section className="  rounded-lg shadow-xl p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50">Your Addresses</h2>
-        <Button onClick={onAddAddress} className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600">
+        <h2 className="text-2xl font-semibold text-primary ">Your Addresses</h2>
+        <Button onClick={onAddAddress} className="bg-blue-600 hover:bg-blue-500 text-white dark:bg-blue-500 dark:hover:bg-blue-600">
           Add New Address
         </Button>
       </div>

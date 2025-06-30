@@ -95,11 +95,11 @@ export default function DashboardPage() {
   return (
     <main className="container mx-auto p-6 space-y-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Your Dashboard</h1>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
         <Button
           onClick={handleLogout}
-          variant="outline"
-          className="bg-red-500 hover:bg-red-600 text-white dark:bg-red-700 dark:hover:bg-red-800"
+          variant="destructive"
+          className=""
         >
           Logout
         </Button>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
 
       {/* User Profile Section */}
       {/* This component internally uses useSession to display profile info */}
-      <UserProfileSection />
+      {/* <UserProfileSection /> */}
 
       {/* Addresses Section - Now using the AddressListSection component */}
       <AddressListSection

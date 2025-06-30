@@ -34,7 +34,7 @@ export const authOptions: NextAuthOptions = {
 
         // 2. If user DOES NOT exist, this is a registration attempt.
         if (!user) {
-          console.log(`No user found for ${credentials.email}. Attempting to register new user.`);
+          //console.log(`No user found for ${credentials.email}. Attempting to register new user.`);
           const hashedPassword = await bcrypt.hash(credentials.password, 10);
           
           try {

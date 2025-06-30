@@ -24,13 +24,13 @@ export function AddToCartForm({ product }: AddToCartFormProps) {
     <div className="flex flex-col space-y-3">
       {/* Quantity Selector */}
       <div className="flex items-center gap-2">
-        <Button variant="outline" onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</Button>
+        <Button variant="outline" className='bg-accent' onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</Button>
         <span className="w-8 text-center">{quantity}</span>
         <Button variant="outline" onClick={() => setQuantity(quantity + 1)}>+</Button>
       </div>
 
       {/* Add to Cart Button */}
-      <Button onClick={handleAddToCart}>
+      <Button onClick={handleAddToCart} className='bg-accent' variant="actionGreen">
         Add to Cart
       </Button>
     </div>
