@@ -1,7 +1,7 @@
 // Custom hook to handle authentication status and redirect unauthenticated users.
 
 import { useEffect, useState } from 'react';
-// FIX: Removed the incorrect import of SessionStatus.
+
 // We will define a local type alias that matches the actual string literals.
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'; // Type for useRouter instance
 

@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import { useSession, signOut } from "next-auth/react";
 import { Toggle } from './ToggleTheme'; // Corrected import from Toggle to ThemeToggle
 import { CartSheet } from '@/components/app-ui/cart/CartSheet';
-import { Menu } from 'lucide-react'; // Import Menu (hamburger) and X (close) icons
+import { Menu} from 'lucide-react'; // Import Menu (hamburger) and X (close) icons
 import { Separator } from '../ui/separator';
 
 export function Navbar() {
@@ -42,7 +42,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 w-full border-b bg-background shadow-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between h-16">
         {/* Logo/Site Title */}
-        <Link href="/" className="text-xl font-bold text-primary hover:text-primary/90 transition-colors">
+        <Link href="/" className="text-xl text-secondary font-bold  hover:text-secondary/90 transition-colors">
           Grocery Portal
         </Link>
 
@@ -78,20 +78,7 @@ export function Navbar() {
               </NavigationMenuItem>
             ) : (
               <>
-                <NavigationMenuItem className="hidden lg:block"> {/* Hide user name on smaller desktops */}
-                  <span className="text-sm font-medium text-foreground">
-                    {session?.user?.name || session?.user?.email || 'User'}
-                  </span>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <Button
-                    onClick={() => signOut({ callbackUrl: '/auth' })}
-                    variant="destructive"
-                    className="transition-colors"
-                  >
-                    Logout
-                  </Button>
-                </NavigationMenuItem>
+                
               </>
             )}
           </NavigationMenuList>

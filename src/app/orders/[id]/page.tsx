@@ -1,6 +1,6 @@
 // src/app/dashboard/orders/[id]/page.tsx
 // This component displays the detailed information for a single order.
-
+// TODO: Modularize and cleanup this page
 'use client'; // This is a client component as it fetches data on the client-side based on URL params.
 
 import { useEffect, useState, useCallback } from 'react';
@@ -11,7 +11,7 @@ import { useAuthRedirect } from '@/hooks/useAuthRedirect'; // Import the useAuth
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge'; // Assuming you have a Badge component (e.g., from Shadcn UI)
+import { Badge } from '@/components/ui/badge'; 
 import { Button } from '@/components/ui/button';
 
 // Define props for the page component.
@@ -103,6 +103,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   // --- Render Loading / Error States ---
   // Show skeleton if auth is loading, status is loading, or if resolvedOrderId is not yet available.
+  // Provides better UX
   if (isLoadingAuth || status === 'loading' || !resolvedOrderId || loadingOrderDetails) {
     return (
       <div className="container mx-auto p-6 space-y-8 min-h-screen">
@@ -153,7 +154,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       <Card className="shadow-xl bg-white dark:bg-gray-800 p-6">
         <CardHeader className="px-0 pt-0 pb-4">
           <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
-            Order #{order.id.substring(0, 8)}...
+            Order #{order.id}
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-400">
             Placed on: {new Date(order.orderDate).toLocaleString()}

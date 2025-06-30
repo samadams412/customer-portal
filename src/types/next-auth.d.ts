@@ -1,5 +1,5 @@
 // src/types/next-auth.d.ts
-// Extend NextAuth.js default types to include custom properties from your User model
+// Extend NextAuth.js default types to include custom properties from the User model
 
 import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
 import { JWT } from "next-auth/jwt";
@@ -7,8 +7,8 @@ import { JWT } from "next-auth/jwt";
 declare module "next-auth" {
   interface User extends DefaultUser {
     id: string; // Your Prisma User model's ID
-    name?: string | null; // From your Prisma User model
-    email?: string | null; // From your Prisma User model
+    name?: string | null; // From the Prisma User model
+    email?: string | null; // From the Prisma User model
   }
 
   interface Session {

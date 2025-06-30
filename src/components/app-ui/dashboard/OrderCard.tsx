@@ -15,7 +15,7 @@ export function OrderCard({ order }: OrderCardProps) {
     <Card className="shadow-md">
       <CardHeader>
         <CardTitle className="text-lg">
-          Order #{order.id.substring(0, 8)}... - Total: ${order.totalAmount.toFixed(2)}
+          Order #{order.id.substring(0, 8)}... - Total: ${order.totalAmount.toFixed(2)} 
         </CardTitle>
         <CardDescription>
           Placed on: {new Date(order.orderDate).toLocaleDateString()} | Status: {order.status} | Type: {order.deliveryType}

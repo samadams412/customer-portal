@@ -18,7 +18,7 @@ export function OrderListSection({
   error,
 }: OrderListSectionProps) {
   return (
-    <section className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6">
+    <section className=" rounded-lg shadow-xl p-6">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Your Orders</h2>
       {loading ? (
         <div className="space-y-4">

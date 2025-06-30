@@ -58,7 +58,7 @@ export function CartProvider({ children }: CartProviderProps) {
     if (!isLoading) { // Only save once initial load is done
       try {
         localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cartItems));
-        console.log("Cart saved to localStorage:", cartItems);
+        //console.log("Cart saved to localStorage:", cartItems);
       } catch (error) {
         console.error("Failed to save cart to localStorage:", error);
       }
@@ -70,7 +70,7 @@ export function CartProvider({ children }: CartProviderProps) {
     // If session status changes to 'unauthenticated' (logged out), clear the cart
     // Ensure this only runs after the initial session check is complete ('loading' -> 'unauthenticated')
     if (status === 'unauthenticated' && !isLoading) {
-      console.log("User logged out or session expired. Clearing cart.");
+      //console.log("User logged out or session expired. Clearing cart.");
       setCartItems([]); // Clear cart
       localStorage.removeItem(LOCAL_STORAGE_CART_KEY); // Clear localStorage
     }
@@ -110,7 +110,7 @@ const addToCart = useCallback((product: Product, quantity: number) => {
   const removeFromCart = useCallback((cartItemId: string) => {
     setCartItems(currentItems => {
       const filteredItems = currentItems.filter(item => item.id !== cartItemId);
-      console.log(`Removed item ${cartItemId} from cart.`);
+      //console.log(`Removed item ${cartItemId} from cart.`);
       return filteredItems;
     });
   }, []); // No dependencies
@@ -121,10 +121,10 @@ const addToCart = useCallback((product: Product, quantity: number) => {
         if (item.id === cartItemId) {
           if (quantity <= 0) {
             // If quantity is 0 or less, effectively remove the item by filtering it out later
-            console.log(`Setting quantity to 0 for item ${cartItemId}, will be removed.`);
+            //console.log(`Setting quantity to 0 for item ${cartItemId}, will be removed.`);
             return { ...item, quantity: 0 };
           }
-          console.log(`Updated quantity for item ${cartItemId} to ${quantity}`);
+          //console.log(`Updated quantity for item ${cartItemId} to ${quantity}`);
           return { ...item, quantity: quantity };
         }
         return item;
@@ -135,7 +135,7 @@ const addToCart = useCallback((product: Product, quantity: number) => {
 
   const clearCart = useCallback(() => {
     setCartItems([]);
-    console.log("Cart cleared.");
+    //console.log("Cart cleared.");
   }, []);
 
   // Calculate cart total
@@ -150,10 +150,10 @@ const addToCart = useCallback((product: Product, quantity: number) => {
     addToCart,
     removeFromCart,
     updateCartItemQuantity,
-    clearCart, // Included in context value
+    clearCart, 
     isLoading,
     cartTotal,
-    cartCount, // Included in context value
+    cartCount,
   }), [cartItems, addToCart, removeFromCart, updateCartItemQuantity, clearCart, isLoading, cartTotal, cartCount]);
 
   return (

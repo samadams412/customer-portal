@@ -19,7 +19,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+        link: "text-primary underline-offset-4 hover:underline", // TODO: Add our brand color here as a default button variant
+        actionGreen: "bg-action-green text-action-green-foreground shadow-xs hover:bg-[oklch(0.76_0.23_145)] dark:hover:bg-[oklch(0.68_0.22_145)]",
+
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
