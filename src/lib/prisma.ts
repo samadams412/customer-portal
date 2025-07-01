@@ -21,7 +21,7 @@ export type ExtendedPrismaClient = ReturnType<typeof prismaClientSingleton>;
 // Declare a global variable to store the PrismaClient instance.
 // This is necessary to maintain a single instance across hot reloads in development.
 declare global {
-  // eslint-disable-next-line no-var
+  
   var prismaGlobal: ExtendedPrismaClient | undefined;
 }
 

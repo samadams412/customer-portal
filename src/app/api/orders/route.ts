@@ -79,17 +79,21 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(order, { status: 201 });
-  } catch (error: any) {
-    console.error("POST /api/orders error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to place order" },
-      { status: 500 }
-    );
-  }
+    } catch (error: unknown) {
+      console.error("POST /api/orders error:", error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to place order";
+
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 500 }
+      );
+    }
 }
 
 // --- GET /api/orders ---
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   const user = await getSessionUser();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -114,11 +118,15 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(orders, { status: 200 });
-  } catch (error: any) {
-    console.error("GET /api/orders error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to fetch orders" },
-      { status: 500 }
-    );
-  }
+    } catch (error: unknown) {
+      console.error("GET /api/orders error:", error);
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to fetch orders";
+
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 500 }
+      );
+    }
 }
