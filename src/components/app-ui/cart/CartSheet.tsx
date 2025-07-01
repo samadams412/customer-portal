@@ -18,40 +18,60 @@ import { CartItem } from "./CartItem";
 import { ShoppingCart } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { useAddresses } from "@/hooks/useAddresses";
+
 
 export function CartSheet() {
   const { cartItems, cartCount, cartTotal, clearCart } = useCart();
+  const [deliveryType, setDeliveryType] = React.useState<'PICKUP' | 'DELIVERY'>('PICKUP');
+  const [shippingAddressId, setShippingAddressId] = React.useState<string | null>(null);
 
-const handleCheckout = async () => {
-  
-  try {
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cartItems }),
-    });
+  const {
+    addresses,
+    fetchAddresses,
+    loadingAddresses,
+    addressError,
+  } = useAddresses();
 
-    if (!res.ok) {
-      const error = await res.json();
-      toast.error(`Checkout failed: ${error.error}`);
-      return;
+  React.useEffect(() => {
+    if (deliveryType === 'DELIVERY') {
+      fetchAddresses();
     }
-    // Clear cart after checking out
-    clearCart();
-    const { url } = await res.json();
-    if (url) {
-      window.location.href = url; // Redirect to Stripe Checkout
+  }, [deliveryType, fetchAddresses]);
+
+  const handleCheckout = async () => {
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cartItems, deliveryType, shippingAddressId }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        toast.error(`Checkout failed: ${error.error}`);
+        return;
+      }
+      clearCart();
+      const { url } = await res.json();
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      toast.error('Something went wrong during checkout.');
     }
-  } catch (err) {
-    console.error("Checkout error:", err);
-    toast.error('Something went wrong during checkout.');
-  }
-};
-
-
+  };
 
   return (
-    <Sheet>
+    <Sheet onOpenChange={(open) => {
+        if (open && deliveryType === 'DELIVERY') {
+          fetchAddresses();
+        }
+      }}>
+
       <SheetTrigger asChild>
         <Button
           aria-label="Cart"
@@ -93,6 +113,56 @@ const handleCheckout = async () => {
                 <span>Subtotal:</span>
                 <span>{formatPrice(cartTotal)}</span>
               </div>
+
+              <div className="w-full">
+                <Label className="block mb-2 font-medium">Delivery Option:</Label>
+                <RadioGroup
+                  defaultValue="PICKUP"
+                  onValueChange={(value) => setDeliveryType(value as 'PICKUP' | 'DELIVERY')}
+                  className="flex space-x-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="PICKUP" id="pickup" />
+                    <Label htmlFor="pickup">Pickup</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="DELIVERY" id="delivery" />
+                    <Label htmlFor="delivery">Delivery</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {deliveryType === 'DELIVERY' && (
+                <div className="w-full mt-4">
+                  <Label className="block mb-2 font-medium">Select Address:</Label>
+                  {loadingAddresses ? (
+                    <p className="text-sm text-muted-foreground">Loading addresses...</p>
+                  ) : addressError ? (
+                    <p className="text-sm text-red-500">{addressError}</p>
+                  ) : addresses.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">No addresses found. Please add one in your profile.</p>
+                  ) : (
+                    <RadioGroup
+                      value={shippingAddressId || ''}
+                      onValueChange={setShippingAddressId}
+                      className="space-y-2"
+                    >
+                      {addresses.map((address) => (
+                        <div key={address.id} className="flex items-start space-x-2">
+                          <RadioGroupItem value={address.id} id={`address-${address.id}`} />
+                          <Label htmlFor={`address-${address.id}`} className="flex-1 cursor-pointer">
+                            <div>{address.street}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {address.city}, {address.state} {address.zipCode}
+                            </div>
+                          </Label>
+                        </div>
+                      ))}
+                    </RadioGroup>
+                  )}
+                </div>
+              )}
+
               <Button
                 onClick={handleCheckout}
                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"

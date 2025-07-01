@@ -17,6 +17,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No cart items provided" }, { status: 400 });
   }
 
+  const deliveryTypeEnum = deliveryType === "DELIVERY" ? "DELIVERY" : "PICKUP";
+
   // Compute subtotal and tax
   const subtotalAmount = cartItems.reduce(
     (sum: number, item: any) => sum + item.product.price * item.quantity,
@@ -32,8 +34,8 @@ export async function POST(req: NextRequest) {
       subtotalAmount,
       taxAmount,
       totalAmount,
-      deliveryType: "PICKUP",
-      shippingAddressId,
+      deliveryType: deliveryTypeEnum,
+      shippingAddressId: deliveryTypeEnum === "DELIVERY" ? shippingAddressId : null,
       status: "PENDING",
       orderItems: {
         create: cartItems.map((item: any) => ({
@@ -68,10 +70,10 @@ export async function POST(req: NextRequest) {
     success_url: `${baseUrl}/dashboard`,
     cancel_url: `${baseUrl}/cancel`,
     payment_intent_data: {
-      // Here we send the orderId in metadata 
-      // Stripe webhook will use this to update the order
       metadata: {
         orderId: newOrder.id,
+        deliveryType: deliveryTypeEnum,
+        shippingAddressId: deliveryTypeEnum === "DELIVERY" ? shippingAddressId || "" : "",
       },
     },
   });
