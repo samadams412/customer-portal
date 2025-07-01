@@ -19,9 +19,11 @@ export async function POST(req: Request) {
   try {
     const signature = (await headers()).get("stripe-signature")!;
     event = stripe.webhooks.constructEvent(rawBody, signature, endpointSecret);
-  } catch (err: any) {
-    console.error("⚠️ Webhook signature verification failed:", err.message);
-    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Invalid Stripe signature";
+    console.error("⚠️ Webhook signature verification failed:", message);
+    return new Response(`Webhook Error: ${message}`, { status: 400 });
   }
 
   if (event.type === "charge.succeeded") {
@@ -38,11 +40,13 @@ export async function POST(req: Request) {
         where: { id: orderId },
         data: { status: "PROCESSING" },
       });
-      console.log("✅ Order marked as PROCESSING:", orderId);
-    } catch (err: any) {
-      console.error("❌ Failed to update order status:", err.message);
-      return new Response("Failed to update order", { status: 500 });
-    }
+      //console.log("✅ Order marked as PROCESSING:", orderId);
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "Unknown database error";
+        console.error("❌ Failed to update order status:", message);
+        return new Response("Failed to update order", { status: 500 });
+      }
   }
 
   return new Response("Received", { status: 200 });

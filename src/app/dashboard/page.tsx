@@ -13,7 +13,7 @@ import { useAddresses } from '@/hooks/useAddresses';
 import { useOrders } from '@/hooks/useOrders';
 
 // Import modular components
-import { UserProfileSection } from '@/components/app-ui/dashboard/UserProfileSection'; // New profile section
+//import { UserProfileSection } from '@/components/app-ui/dashboard/UserProfileSection'; // New profile section
 import { AddressListSection } from '@/components/app-ui/dashboard/AddressListSection'; // New address list section
 import { OrderListSection } from '@/components/app-ui/dashboard/OrderListSection';     // New order list section
 import { ConfirmationDialog } from '@/components/app-ui/dashboard/ConfirmationDialog'; // Existing dialog

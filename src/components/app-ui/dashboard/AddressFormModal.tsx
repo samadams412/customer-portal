@@ -90,7 +90,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
         throw new Error(errorData.error || `Failed to ${addressToEdit ? 'update' : 'add'} address: ${res.status}`);
       }
 
-      console.log(`Address ${addressToEdit ? 'updated' : 'added'} successfully!`);
+      
       onClose(true); // Close and signal parent to refresh
     } catch (error: unknown) {
       console.error(`Error ${addressToEdit ? 'updating' : 'adding'} address:`, error);

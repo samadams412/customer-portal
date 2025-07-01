@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth-server";
 import { prisma } from "@/lib/prisma";
+import { CartItem } from "@/types/interface";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {});
 
@@ -10,8 +11,11 @@ export async function POST(req: NextRequest) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = await req.json();
-  const { cartItems, deliveryType, shippingAddressId } = body;
+   const { cartItems, deliveryType, shippingAddressId }: {
+    cartItems: CartItem[];
+    deliveryType: "PICKUP" | "DELIVERY";
+    shippingAddressId?: string;
+  } = await req.json();
 
   if (!cartItems?.length) {
     return NextResponse.json({ error: "No cart items provided" }, { status: 400 });
@@ -21,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   // Compute subtotal and tax
   const subtotalAmount = cartItems.reduce(
-    (sum: number, item: any) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + item.product.price * item.quantity,
     0
   );
   const taxAmount = subtotalAmount * 0.0825;
@@ -38,7 +42,7 @@ export async function POST(req: NextRequest) {
       shippingAddressId: deliveryTypeEnum === "DELIVERY" ? shippingAddressId : null,
       status: "PENDING",
       orderItems: {
-        create: cartItems.map((item: any) => ({
+        create: cartItems.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
           priceAtPurchase: item.product.price,
@@ -47,7 +51,7 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  const line_items = cartItems.map((item: any) => ({
+  const line_items = cartItems.map((item) => ({
     price_data: {
       currency: "usd",
       product_data: {

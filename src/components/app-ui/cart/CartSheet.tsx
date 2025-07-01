@@ -8,6 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
+  SheetDescription,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -54,7 +55,7 @@ export function CartSheet() {
         toast.error(`Checkout failed: ${error.error}`);
         return;
       }
-      clearCart();
+      clearCart(); // Reset the cart here when we direct to checkout
       const { url } = await res.json();
       if (url) {
         window.location.href = url;
@@ -90,6 +91,9 @@ export function CartSheet() {
 
       <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
         <SheetHeader className="px-6 pb-4">
+          <SheetDescription className="sr-only">
+            Review items in your cart and choose a delivery option before checkout.
+          </SheetDescription>
           <SheetTitle className="text-2xl font-semibold">
             Cart {cartCount > 0 && `(${cartCount})`}
           </SheetTitle>
