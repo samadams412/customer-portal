@@ -21,16 +21,16 @@ export function AddToCartForm({ product }: AddToCartFormProps) {
   };
 
   return (
-    <div className="flex flex-col space-y-3">
+    <div className="flex flex-col space-y-3" >
       {/* Quantity Selector */}
       <div className="flex items-center gap-2">
-        <Button variant="outline" className='bg-accent' onClick={() => setQuantity(Math.max(1, quantity - 1))}>−</Button>
+        <Button variant="outline" className='bg-accent' onClick={() => setQuantity(Math.max(1, quantity - 1))} disabled={!product.inStock}>−</Button>
         <span className="w-8 text-center">{quantity}</span>
-        <Button variant="outline" onClick={() => setQuantity(quantity + 1)}>+</Button>
+        <Button variant="outline" onClick={() => setQuantity(quantity + 1)} disabled={!product.inStock}>+</Button>
       </div>
 
       {/* Add to Cart Button */}
-      <Button onClick={handleAddToCart} className='bg-accent' variant="actionGreen">
+      <Button onClick={handleAddToCart} className='bg-accent' variant="actionGreen" disabled = {!product.inStock}>
         Add to Cart
       </Button>
     </div>

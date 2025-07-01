@@ -46,7 +46,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
       {/* Add To Cart Form - now integrated directly */}
       <div className="mt-auto pt-4"> {/* Use mt-auto to push to bottom, pt-4 for spacing */}
-        <AddToCartForm product={product} />
+        <AddToCartForm product={product}/>
       </div>
     </div>
   );
