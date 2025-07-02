@@ -1,49 +1,94 @@
-'use client'; 
-// TODO: Logged in user shouldnt be able to hit the auth page again
-import { useState } from 'react';
-import { signIn } from 'next-auth/react'; // Import signIn function from NextAuth.js
-import { useRouter } from 'next/navigation'; // Import useRouter for client-side navigation
+'use client';
+
+// TODO: Logged in user shouldn't be able to hit the auth page again
+import { useEffect, useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useSession } from 'next-auth/react';
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and register UI // NOTE: Currently on the backend our route doesnt care it just checks if the user exists, if not it creates one.
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // State to display authentication errors
-  const router = useRouter(); 
+  const [error, setError] = useState('');
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+    // Redirect logged-in users
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/dashboard');
+    }
+  }, [status, router]);
+
+    // Optionally render a loading state
+  if (status === 'loading') {
+    return null; // Or show a spinner
+  }
+
+  if (status === 'authenticated') {
+    return null; // Prevent showing auth page while redirecting
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent default form submission
-    setError(''); // Clear previous errors
+    e.preventDefault();
+    setError('');
 
-    // Use NextAuth.js's signIn function with the 'credentials' provider
-    // The 'authorize' callback in src/auth.ts will handle whether to log in an existing user
-    // or register a new one based on email existence.
-    const result = await signIn('credentials', {
-      redirect: false, // Prevent NextAuth.js from redirecting automatically after sign-in
-      email,
-      password,
-     
-    });
+    if (isLogin) {
+      const result = await signIn('credentials', {
+        redirect: false,
+        email,
+        password,
+      });
 
-    if (result?.error) {
-      // Handle errors returned by the 'authorize' callback in src/auth.ts
-      // For security, NextAuth.js provides generic errors like "CredentialsSignin".
-      // You can map these to user-friendly messages or keep them generic.
-      if (result.error === "CredentialsSignin") {
-        setError("Invalid email or password.");
-      } else {
-        setError(result.error); // Display generic NextAuth.js error
+      if (result?.error) {
+        if (result.error === "CredentialsSignin") {
+          setError("Invalid email or password.");
+        } else {
+          setError(result.error);
+        }
+      } else if (result?.ok) {
+        router.push('/dashboard');
+        router.refresh();
       }
-    } else if (result?.ok) {
-      // If sign-in was successful, redirect to the dashboard
-      router.push('/dashboard'); 
-      router.refresh(); // Force a refresh to update session state across the app
+    } else {
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          setError(error.error || 'Registration failed.');
+          return;
+        }
+
+        const result = await signIn('credentials', {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (result?.ok) {
+          router.push('/dashboard');
+          router.refresh();
+        } else {
+          setError("Login after registration failed.");
+        }
+      } catch (err) {
+        console.error("Registration error:", err);
+        setError("Unexpected error during registration.");
+      }
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50">
-      <div className="w-full max-w-md space-y-6 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl">
+    <main className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
+      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg shadow-xl">
         <h1 className="text-3xl font-bold text-center">
           {isLogin ? 'Login to Your Account' : 'Register for an Account'}
         </h1>
@@ -51,13 +96,12 @@ export default function AuthPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="sr-only">Email address</label>
-            <input
+            <Input
               id="email"
               name="email"
               type="email"
               autoComplete="email"
               required
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"
               placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -66,38 +110,34 @@ export default function AuthPage() {
 
           <div>
             <label htmlFor="password" className="sr-only">Password</label>
-            <input
+            <Input
               id="password"
               name="password"
               type="password"
               autoComplete="current-password"
               required
-              className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+          {error && <p className="text-destructive text-sm text-center">{error}</p>}
 
-          <button
-            type="submit"
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600"
-          >
+          <Button type="submit" className="w-full">
             {isLogin ? 'Sign In' : 'Register'}
-          </button>
+          </Button>
         </form>
-        {/* NOTE: Potentially remove this functionality and just have a singular form for register/login */}
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+
+        <p className="text-center text-sm text-muted-foreground">
           {isLogin ? 'Need an account?' : 'Already have an account?'}{' '}
           <button
-            type="button" // Use type="button" to prevent form submission on click
+            type="button"
             onClick={() => {
               setIsLogin(!isLogin);
-              setError(''); // Clear errors when switching form type
+              setError('');
             }}
-            className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+            className="font-medium underline underline-offset-4 hover:text-primary"
           >
             {isLogin ? 'Sign up here' : 'Sign in here'}
           </button>

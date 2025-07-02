@@ -91,61 +91,70 @@ export default function DashboardPage() {
     return null;
   }
 
+  
+  if (!session || !session.user) {
+    return (
+      <main className="container mx-auto p-6">
+        <p className="text-center text-muted-foreground">You must be logged in to view the dashboard.</p>
+      </main>
+    );
+  }
+
   // --- Render Dashboard Content ---
-  return (
-    <main className="container mx-auto p-6 space-y-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button
-          onClick={handleLogout}
-          variant="destructive"
-          className=""
-        >
-          Logout
-        </Button>
-      </div>
+return (
+  <main className="container mx-auto p-6 space-y-8">
+    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+      <h1 className="text-3xl font-bold">Dashboard</h1>
 
-      {/* User Profile Section */}
-      {/* This component internally uses useSession to display profile info */}
-      {/* <UserProfileSection /> */}
-
-      {/* Addresses Section - Now using the AddressListSection component */}
-      <AddressListSection
-        addresses={addresses}
-        loading={loadingAddresses}
-        error={addressError}
-        onAddAddress={handleAddAddress}
-        onEditAddress={handleEditAddress}
-        onDeleteAddress={confirmDeleteAddress} // Pass the confirmation handler
-      />
-
-      {/* Order History Section - Now using the OrderListSection component */}
-      <OrderListSection
-        orders={orders}
-        loading={loadingOrders}
-        error={orderError}
-      />
-
-      {/* Confirmation Dialog - Remains here, controlled by useAddresses hook's state */}
-      {/* TODO: Check if address is properly being deleted. */}
-      <ConfirmationDialog
-        isOpen={isDeleteDialogOpen}
-        onConfirm={executeDeleteAddress}
-        onCancel={cancelDeleteAddress}
-        title="Confirm Address Deletion"
-        description="Are you sure you want to delete this address? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-      />
-
-      {/* Address Form Modal - Remains here, controlled by useAddresses hook's state */}
-      {isAddressModalOpen && (
-        <AddressFormModal
-          isOpen={isAddressModalOpen}
-          onClose={handleAddressModalClose}
-          addressToEdit={editingAddress}
-        />
+      {session?.user?.email && (
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+          <div className="text-sm text-muted-foreground text-center sm:text-left">
+            Logged in as <span className="font-medium text-foreground">{session.user.email}</span>
+          </div>
+          <Button onClick={handleLogout} variant="destructive">
+            Logout
+          </Button>
+        </div>
       )}
-    </main>
-  );
+    </div>
+
+    {/* Addresses Section */}
+    <AddressListSection
+      addresses={addresses}
+      loading={loadingAddresses}
+      error={addressError}
+      onAddAddress={handleAddAddress}
+      onEditAddress={handleEditAddress}
+      onDeleteAddress={confirmDeleteAddress}
+    />
+
+    {/* Order History Section */}
+    <OrderListSection
+      orders={orders}
+      loading={loadingOrders}
+      error={orderError}
+    />
+
+    {/* Confirmation Dialog */}
+    <ConfirmationDialog
+      isOpen={isDeleteDialogOpen}
+      onConfirm={executeDeleteAddress}
+      onCancel={cancelDeleteAddress}
+      title="Confirm Address Deletion"
+      description="Are you sure you want to delete this address? This action cannot be undone."
+      confirmText="Delete"
+      cancelText="Cancel"
+    />
+
+    {/* Address Form Modal */}
+    {isAddressModalOpen && (
+      <AddressFormModal
+        isOpen={isAddressModalOpen}
+        onClose={handleAddressModalClose}
+        addressToEdit={editingAddress}
+      />
+    )}
+  </main>
+);
+
 }
