@@ -1,19 +1,19 @@
 // src/auth.ts
 // This file defines the core NextAuth.js configuration options,
-// including the CredentialsProvider which now handles both login and registration
-// with more specific error messages.
+// including the CredentialsProvider which now handles login only (registration is separate)
 
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma"; // Import your Prisma Client instance
 import bcrypt from "bcrypt"
+
 export const authOptions: NextAuthOptions = {
   // Use 'jwt' strategy for session management.
   // This means session data is stored in a JWT in a cookie, not in the database.
   session: {
     strategy: "jwt",
   },
-  // Define authentication providers. Here, we use CredentialsProvider for email/password login.
+  // Define authentication providers. Here, we use CredentialsProvider for email/password login only.
   providers: [
     CredentialsProvider({
       name: "Credentials", // Name of the provider (displayed on sign-in page)
@@ -21,61 +21,30 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email", placeholder: "jsmith@example.com" },
         password: { label: "Password", type: "password" },
       },
-      // The authorize function handles the authentication logic for both login and registration.
+      // The authorize function handles login logic only. Registration is handled in /api/register.
       async authorize(credentials, _req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Email and password are required.");
         }
 
         // 1. Attempt to find the user in your database by email.
-        let user = await prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
 
-        // 2. If user DOES NOT exist, this is a registration attempt.
-        if (!user) {
-          //console.log(`No user found for ${credentials.email}. Attempting to register new user.`);
-          const hashedPassword = await bcrypt.hash(credentials.password, 10);
-          
-          try {
-            // Create the new user in the database
-            user = await prisma.user.create({
-              data: {
-                email: credentials.email,
-                password: hashedPassword,
-                // You might add a default name here if your schema requires it, e.g., name: "New User"
-              },
-            });
-            //console.log(`Successfully registered new user: ${user.email}`);
-          } catch (createError) {
-            console.error("Error creating new user during registration:", createError);
-            // This error is typically for DB issues during creation, not email conflict if !user was true.
-            throw new Error("Registration failed due to a server error. Please try again.");
-          }
-        } else {
-          // 3. If user DOES exist, this is a login attempt, or an attempt to register with an existing email.
-          // Check if the existing user has a password for credentials login.
-          if (!user.password) {
-            throw new Error("This account was not set up with a password. Please use another login method (e.g., OAuth).");
-          }
-
-          const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-
-          if (!isValidPassword) {
-            // This error is for INCORRECT PASSWORD for an existing user.
-            throw new Error("Invalid email or password.");
-          }
-
-          // If password is valid, but the user was trying to 'register' with an existing email.
-          // This scenario is handled by the client-side 'isLogin' toggle, but we can clarify.
-          // NextAuth's `authorize` doesn't know if the client intended 'login' or 'register'.
-          // It just tries to authenticate. If it succeeds on an existing user, it logs them in.
-          // If a user tried to 'register' with an existing email and correct password, they'll simply log in.
-          // If they tried to 'register' with an existing email and *wrong* password, they get "Invalid email or password."
-          // This is the expected, albeit sometimes confusing, behavior for a combined `authorize` callback.
+        // 2. If user DOES NOT exist or has no password (e.g., registered via OAuth), login fails.
+        if (!user || !user.password) {
+          throw new Error("Invalid email or password.");
         }
 
-        // 4. If we reach here, either an existing user was authenticated or a new user was successfully registered.
+        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+
+        if (!isValidPassword) {
+          // This error is for INCORRECT PASSWORD for an existing user.
+          throw new Error("Invalid email or password.");
+        }
+
+        // 3. If we reach here, the user was authenticated successfully.
         // Return the user object. This object will be available in the 'jwt' and 'session' callbacks.
         // ONLY include what you need for the session here; sensitive data like password should NOT be returned.
         return {
