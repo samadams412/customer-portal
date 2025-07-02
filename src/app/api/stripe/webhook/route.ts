@@ -1,4 +1,3 @@
-// ✅ /app/api/stripe/webhook/route.ts — UPDATE ORDER ON PAYMENT
 import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { buffer } from "node:stream/consumers";

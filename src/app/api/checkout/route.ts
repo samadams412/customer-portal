@@ -1,4 +1,4 @@
-// ✅ /app/api/checkout/route.ts — CREATE ORDER BEFORE SESSION
+// CREATE ORDER BEFORE SESSION
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth-server";

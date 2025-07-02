@@ -14,9 +14,10 @@ interface UpdateAddressPayload {
 
 // Update User Address
 // --- PUT /api/address/[id] (Update Specific Address) ---
-export async function PUT(
-  request: NextRequest,                        // lots of type errors with params
-  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
+
+// lots of type errors with params
+// FIX: Reverted type to Promise to satisfy Next.js build
+export async function PUT(request: NextRequest, context: { params: Promise<{ id: string }> }
 ) {
   // FIX: Access id after awaiting context.params
   const { id: addressId } = await context.params;
@@ -74,9 +75,7 @@ export async function PUT(
 
 // Delete User Address
 // --- DELETE /api/address/[id] (Delete Specific Address) ---
-export async function DELETE(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> } 
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> } 
 ) {
  
   const { id: addressId } = await context.params;
