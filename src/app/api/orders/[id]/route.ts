@@ -6,10 +6,9 @@ import { isValidUUID } from "@/lib/validators"; // Utility for UUID validation
 
 // --- GET /api/orders/[id] (Fetch Single Order by ID) ---
 // Fetches a specific order for the authenticated user by its ID.
-export async function GET(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> } // FIX: Reverted type to Promise to satisfy Next.js build
-) {
+// FIX: Reverted type to Promise to satisfy Next.js build
+
+export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   // FIX: Access id after awaiting context.params
   const { id: orderId } = await context.params;
 
