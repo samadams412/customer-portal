@@ -8,6 +8,7 @@ import { Product } from '@/types/interface';
 import { AddToCartForm } from '@/components/app-ui/cart/AddToCartForm';
 import { formatPrice } from '@/lib/utils'; // Assuming formatPrice is in utils
 import Image from 'next/image'
+
 interface ProductCardProps {
   product: Product;
 }
