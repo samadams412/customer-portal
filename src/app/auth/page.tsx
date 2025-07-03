@@ -16,7 +16,7 @@ export default function AuthPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-    // Optionally render a loading state
+    
     
     // Redirect logged-in users
     useEffect(() => {
