@@ -16,6 +16,11 @@ export default function AuthPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+    // Optionally render a loading state
+  if (status === 'loading') {
+    return null; // Or show a spinner
+  }
+
     // Redirect logged-in users
   useEffect(() => {
     if (status === 'authenticated') {
@@ -23,10 +28,7 @@ export default function AuthPage() {
     }
   }, [status, router]);
 
-    // Optionally render a loading state
-  if (status === 'loading') {
-    return null; // Or show a spinner
-  }
+
 
   if (status === 'authenticated') {
     return null; // Prevent showing auth page while redirecting
