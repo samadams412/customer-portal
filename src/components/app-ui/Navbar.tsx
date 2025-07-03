@@ -24,6 +24,7 @@ import { Toggle } from './ToggleTheme'; // Corrected import from Toggle to Theme
 import { CartSheet } from '@/components/app-ui/cart/CartSheet';
 import { Menu} from 'lucide-react'; // Import Menu (hamburger) and X (close) icons
 import { Separator } from '../ui/separator';
+import { Skeleton } from '../ui/skeleton';
 
 export function Navbar() {
   const { data: session, status } = useSession();
@@ -37,6 +38,26 @@ export function Navbar() {
     // Only show Dashboard if logged in
     ...(isLoggedIn ? [{ href: "/dashboard", label: "Dashboard" }] : []),
   ];
+
+if (status === "loading") {
+  return (
+    <header className="sticky top-0 z-40 w-full border-b bg-background shadow-sm">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between h-16">
+        <Skeleton className="h-6 w-32 rounded" /> {/* Logo placeholder */}
+        <div className="hidden md:flex space-x-4">
+          <Skeleton className="h-6 w-20 rounded" />
+          <Skeleton className="h-6 w-20 rounded" />
+        </div>
+        <div className="flex items-center space-x-2 md:space-x-4">
+          <Skeleton className="h-9 w-9 rounded-full" /> {/* Cart */}
+          <Skeleton className="h-9 w-9 rounded-full" /> {/* Theme toggle */}
+          <Skeleton className="h-9 w-9 rounded-full" /> {/* Hamburger */}
+        </div>
+      </div>
+    </header>
+  );
+}
+
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background shadow-sm">

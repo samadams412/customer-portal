@@ -16,17 +16,19 @@ export default function AuthPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
+    
+    
     // Redirect logged-in users
-  useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/dashboard');
+    useEffect(() => {
+      if (status === 'authenticated') {
+        router.push('/dashboard');
+      }
+    }, [status, router]);
+    
+    if (status === 'loading') {
+      return null; // Or show a spinner
     }
-  }, [status, router]);
 
-    // Optionally render a loading state
-  if (status === 'loading') {
-    return null; // Or show a spinner
-  }
 
   if (status === 'authenticated') {
     return null; // Prevent showing auth page while redirecting
