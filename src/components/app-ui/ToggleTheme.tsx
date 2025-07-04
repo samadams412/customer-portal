@@ -18,10 +18,11 @@ export function Toggle() {
             size="icon"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="text-primary border-primary hover:bg-primary/10 transition-colors"
+            //className="text-primary border-primary hover:bg-primary/10 transition-colors"
+            className="relative h-9 w-9"
             >
-            <Sun className="absolute h-[1.2rem] w-[1.2rem] rotate-0 scale-75 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-75" />
+            <Sun className="absolute rotate-0 scale-110 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-110" />
             <span className="sr-only">Toggle theme</span>
         </Button>
 
