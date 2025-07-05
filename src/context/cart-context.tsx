@@ -7,6 +7,9 @@ import { useSession } from 'next-auth/react'; // Import useSession for NextAuth 
 // FIX: Using interface.ts as per user's confirmation
 import { Product, CartItem } from '@/types/interface';
 
+// Toast
+import { useToast } from "@/components/ui/use-toast";
+
 // Define the key for localStorage
 const LOCAL_STORAGE_CART_KEY = 'frontend_cart_items';
 
@@ -34,7 +37,8 @@ export function CartProvider({ children }: CartProviderProps) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true); // True initially while loading from localStorage
   const { data: session, status } = useSession(); // Get session data and status from NextAuth
-  
+  const { toast } = useToast(); 
+
 
   
   // --- Load Cart from Local Storage on Mount ---
@@ -134,8 +138,24 @@ const addToCart = useCallback((product: Product, quantity: number) => {
   }, []); // No dependencies
 
   const clearCart = useCallback(() => {
-    setCartItems([]);
-    //console.log("Cart cleared.");
+    try {
+      setCartItems([]);
+      //console.log("Cart cleared.");
+      toast({
+        className: "bg-[#22d444] scale-70", 
+        title: "SUCCESS!", 
+        description: "All items removed from cart!",
+        duration: 4000
+      });
+    } catch(error) {
+      toast({
+        className: "scale-70",
+        variant: "destructive", 
+        title: "ERROR!", 
+        description: "Could not add item(s) to cart. Please try again.",
+        duration: 4000
+      }); 
+    }
   }, []);
 
   // Calculate cart total
