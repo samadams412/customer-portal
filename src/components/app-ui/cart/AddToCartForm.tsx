@@ -18,23 +18,28 @@ export function AddToCartForm({ product }: AddToCartFormProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast(); 
+  const [error, setError] = useState<string | null>(null);
+
 
   const handleAddToCart = () => {
     try {
       addToCart(product, quantity);
       //toast(`${product.name} (${quantity}) added to cart`)
       toast({
-        className: "bg-[#22d444]", 
-        title: "Success!", 
-        description: `${product.name} (${quantity}) added to cart`
+        className: "bg-[#22d444] scale-70", 
+        title: "SUCCESS!", 
+        description: `${product.name} (${quantity}) added to cart!`,
+        duration: 4000
       });
 
       setQuantity(1); // reset quantity
-    } catch(error) {
+    } catch(error) {      
       toast({
+        className: "scale-70",
         variant: "destructive", 
         title: "ERROR!", 
-        description: "Something went wrong. Please try again."
+        description: "Could not add item(s) to cart. Please try again.",
+        duration: 4000
       });    
     }
   };

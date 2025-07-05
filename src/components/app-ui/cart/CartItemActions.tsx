@@ -7,12 +7,17 @@ import { Button } from '@/components/ui/button'; // Shadcn Button
 import { Input } from '@/components/ui/input'; // Shadcn Input
 import { Trash2 } from 'lucide-react'; // Lucide icon for trash
 
+// Toast
+import { useToast } from "@/components/ui/use-toast";
+
 interface CartItemActionsProps {
   item: CartItem; // Expects a CartItem object
 }
 
 export function CartItemActions({ item }: CartItemActionsProps) {
   const { updateCartItemQuantity, removeFromCart } = useCart();
+  const { toast } = useToast(); 
+
 
   // Handle quantity change from input or +/- buttons
   const handleQuantityChange = (newQuantity: number) => {
@@ -23,7 +28,24 @@ export function CartItemActions({ item }: CartItemActionsProps) {
 
   // Handle click to remove item from cart
   const handleRemoveClick = () => {
-    removeFromCart(item.id); // Remove by CartItem's unique ID
+    try{
+      removeFromCart(item.id); // Remove by CartItem's unique ID
+
+      toast({
+        className: "bg-[#22d444] scale-70", 
+        title: "SUCCESS!", 
+        description: `${item.product.name} (${item.quantity}) removed from cart!`,
+        duration: 4000
+      });
+    } catch (error) {
+      toast({
+        className: "scale-70",
+        variant: "destructive", 
+        title: "ERROR!", 
+        description: "Could not remove item(s) from cart. Please try again.",
+        duration: 4000
+      });  
+    }
   };
 
   return (
