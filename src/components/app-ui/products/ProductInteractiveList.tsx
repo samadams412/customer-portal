@@ -12,7 +12,7 @@ const ProductInteractiveList: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>(''); // 'price' or 'inStock'
-  const [sortOrder, setSortOrder] = useState<string>('asc'); // 'asc' or 'desc'
+  const [sortOrder, setSortOrder] = useState<string>('asc'); // 'asc' or 'desc'  
 
   // useEffect to fetch products based on search, sortBy, and sortOrder changes
   //TODO: Look into library like SWR and React Query to get rid of useEffect
