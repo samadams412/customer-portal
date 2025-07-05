@@ -4,7 +4,11 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useCart } from '@/context/cart-context';
 import { Product } from '@/types/interface';
-import { toast } from 'sonner';
+//import { toast } from 'sonner';
+
+// Toast
+import { useToast } from "@/components/ui/use-toast";
+
 
 interface AddToCartFormProps {
   product: Product;
@@ -13,11 +17,26 @@ interface AddToCartFormProps {
 export function AddToCartForm({ product }: AddToCartFormProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const { toast } = useToast(); 
 
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    toast(`${product.name} (${quantity}) added to cart`)
-    setQuantity(1); // reset quantity
+    try {
+      addToCart(product, quantity);
+      //toast(`${product.name} (${quantity}) added to cart`)
+      toast({
+        className: "bg-[#22d444]", 
+        title: "Success!", 
+        description: `${product.name} (${quantity}) added to cart`
+      });
+
+      setQuantity(1); // reset quantity
+    } catch(error) {
+      toast({
+        variant: "destructive", 
+        title: "ERROR!", 
+        description: "Something went wrong. Please try again."
+      });    
+    }
   };
 
   return (
