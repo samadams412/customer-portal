@@ -19,6 +19,7 @@ import { OrderListSection } from '@/components/app-ui/dashboard/OrderListSection
 import { ConfirmationDialog } from '@/components/app-ui/dashboard/ConfirmationDialog'; // Existing dialog
 import { AddressFormModal } from '@/components/app-ui/dashboard/AddressFormModal';   // Existing address form modal
 import { Button } from "@/components/ui/button"; // Shadcn button
+import { UserProfileSection } from '@/components/app-ui/dashboard/UserProfileSection';
 
 
 export default function DashboardPage() {
@@ -117,6 +118,7 @@ return (
         </div>
       )}
     </div>
+    <UserProfileSection/>
 
     {/* Addresses Section */}
     <AddressListSection

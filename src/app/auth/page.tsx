@@ -1,12 +1,29 @@
 'use client';
 
-// TODO: Logged in user shouldn't be able to hit the auth page again
 import { useEffect, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSession } from 'next-auth/react';
+import PasswordStrengthBar from '@/components/app-ui/PasswordStrengthBar';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+// Zod schema (used for both login and register, but stronger validation on register)
+const baseSchema = z.object({
+  email: z.string().email({ message: "Invalid email format" }),
+  password: z.string().min(1, { message: "Password is required" }),
+});
+const registerSchema = baseSchema.extend({
+  password: z
+    .string()
+    .min(12, "Password must be at least 12 characters")
+    .regex(/[A-Z]/, "Must include uppercase letter")
+    .regex(/[a-z]/, "Must include lowercase letter")
+    .regex(/[0-9]/, "Must include number")
+    .regex(/[^A-Za-z0-9]/, "Must include special character"),
+});
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,27 +33,26 @@ export default function AuthPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-    
-    
-    // Redirect logged-in users
-    useEffect(() => {
-      if (status === 'authenticated') {
-        router.push('/dashboard');
-      }
-    }, [status, router]);
-    
-    if (status === 'loading') {
-      return null; // Or show a spinner
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/dashboard');
     }
+  }, [status, router]);
 
-
-  if (status === 'authenticated') {
-    return null; // Prevent showing auth page while redirecting
-  }
+  if (status === 'loading' || status === 'authenticated') return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const result = isLogin
+      ? baseSchema.safeParse({ email, password })
+      : registerSchema.safeParse({ email, password });
+
+    if (!result.success) {
+      result.error.errors.forEach((err) => toast.error(err.message));
+      return;
+    }
 
     if (isLogin) {
       const result = await signIn('credentials', {
@@ -46,12 +62,8 @@ export default function AuthPage() {
       });
 
       if (result?.error) {
-        if (result.error === "CredentialsSignin") {
-          setError("Invalid email or password.");
-        } else {
-          setError(result.error);
-        }
-      } else if (result?.ok) {
+        setError("Invalid email or password.");
+      } else {
         router.push('/dashboard');
         router.refresh();
       }
@@ -96,41 +108,34 @@ export default function AuthPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="sr-only">Email address</label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <div>
-            <label htmlFor="password" className="sr-only">Password</label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {/* Show password strength bar on register */}
+          {!isLogin && <PasswordStrengthBar password={password} />}
 
           {error && <p className="text-destructive text-sm text-center">{error}</p>}
 
-          <Button type="submit" 
-            className="w-full bg-black text-white  dark:bg-accent transform hover:scale-105" 
-            variant="actionGreen"
-          >
-            
+          <Button type="submit" className="w-full" variant="actionGreen">
             {isLogin ? 'Sign In' : 'Register'}
           </Button>
         </form>
