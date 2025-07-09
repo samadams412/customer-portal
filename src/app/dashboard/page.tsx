@@ -12,6 +12,8 @@ import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 import { useAddresses } from '@/hooks/useAddresses';
 import { useOrders } from '@/hooks/useOrders';
 
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { motion } from "framer-motion";
 // Import modular components
 //import { UserProfileSection } from '@/components/app-ui/dashboard/UserProfileSection'; // New profile section
 import { AddressListSection } from '@/components/app-ui/dashboard/AddressListSection'; // New address list section
@@ -20,6 +22,7 @@ import { ConfirmationDialog } from '@/components/app-ui/dashboard/ConfirmationDi
 import { AddressFormModal } from '@/components/app-ui/dashboard/AddressFormModal';   // Existing address form modal
 import { Button } from "@/components/ui/button"; // Shadcn button
 import { UserProfileSection } from '@/components/app-ui/dashboard/UserProfileSection';
+import { OrderListTable } from '@/components/app-ui/dashboard/OrderListTable';
 
 
 export default function DashboardPage() {
@@ -103,60 +106,90 @@ export default function DashboardPage() {
 
   // --- Render Dashboard Content ---
 return (
-  <main className="container mx-auto p-6 space-y-8">
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-
-      {session?.user?.email && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-          <div className="text-sm text-muted-foreground text-center sm:text-left">
-            Logged in as <span className="font-medium text-foreground">{session.user.email}</span>
-          </div>
-          <Button onClick={handleLogout} variant="destructive">
-            Logout
-          </Button>
+<main className="container mx-auto p-6">
+  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+    <h1 className="text-3xl font-bold">Dashboard</h1>
+    {session?.user?.email && (
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="text-sm text-muted-foreground text-center sm:text-left">
+          Logged in as <span className="font-medium text-foreground">{session.user.email}</span>
         </div>
-      )}
-    </div>
-    <UserProfileSection/>
-
-    {/* Addresses Section */}
-    <AddressListSection
-      addresses={addresses}
-      loading={loadingAddresses}
-      error={addressError}
-      onAddAddress={handleAddAddress}
-      onEditAddress={handleEditAddress}
-      onDeleteAddress={confirmDeleteAddress}
-    />
-
-    {/* Order History Section */}
-    <OrderListSection
-      orders={orders}
-      loading={loadingOrders}
-      error={orderError}
-    />
-
-    {/* Confirmation Dialog */}
-    <ConfirmationDialog
-      isOpen={isDeleteDialogOpen}
-      onConfirm={executeDeleteAddress}
-      onCancel={cancelDeleteAddress}
-      title="Confirm Address Deletion"
-      description="Are you sure you want to delete this address? This action cannot be undone."
-      confirmText="Delete"
-      cancelText="Cancel"
-    />
-
-    {/* Address Form Modal */}
-    {isAddressModalOpen && (
-      <AddressFormModal
-        isOpen={isAddressModalOpen}
-        onClose={handleAddressModalClose}
-        addressToEdit={editingAddress}
-      />
+        <Button onClick={handleLogout} variant="destructive">
+          Logout
+        </Button>
+      </div>
     )}
-  </main>
+  </div>
+
+  <Tabs defaultValue="profile" className="w-full">
+    <TabsList className="mb-4">
+      <TabsTrigger value="profile">Account Info</TabsTrigger>
+      <TabsTrigger value="addresses">Addresses</TabsTrigger>
+      <TabsTrigger value="orders">Orders</TabsTrigger>
+    </TabsList>
+
+    <TabsContent value="profile">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <UserProfileSection />
+      </motion.div>
+    </TabsContent>
+
+    <TabsContent value="addresses">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <AddressListSection
+          addresses={addresses}
+          loading={loadingAddresses}
+          error={addressError}
+          onAddAddress={handleAddAddress}
+          onEditAddress={handleEditAddress}
+          onDeleteAddress={confirmDeleteAddress}
+        />
+      </motion.div>
+    </TabsContent>
+
+    <TabsContent value="orders">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <OrderListSection
+          orders={orders}
+          loading={loadingOrders}
+          error={orderError}
+        />
+      </motion.div>
+    </TabsContent>
+  </Tabs>
+
+  {/* Confirmation Dialog */}
+  <ConfirmationDialog
+    isOpen={isDeleteDialogOpen}
+    onConfirm={executeDeleteAddress}
+    onCancel={cancelDeleteAddress}
+    title="Confirm Address Deletion"
+    description="Are you sure you want to delete this address? This action cannot be undone."
+    confirmText="Delete"
+    cancelText="Cancel"
+  />
+
+  {/* Address Modal */}
+  {isAddressModalOpen && (
+    <AddressFormModal
+      isOpen={isAddressModalOpen}
+      onClose={handleAddressModalClose}
+      addressToEdit={editingAddress}
+    />
+  )}
+</main>
 );
 
 }
