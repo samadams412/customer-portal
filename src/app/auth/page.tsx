@@ -135,7 +135,7 @@ export default function AuthPage() {
 
           {error && <p className="text-destructive text-sm text-center">{error}</p>}
 
-          <Button type="submit" className="w-full" variant="actionGreen">
+          <Button type="submit" className="w-full" variant="secondary">
             {isLogin ? 'Sign In' : 'Register'}
           </Button>
         </form>
