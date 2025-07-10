@@ -65,7 +65,7 @@
 
   /* --- IN STOCK (GREEN) --- */
   --secondary: oklch(78.512% 0.25454 143.58); /* A legible green for 'In Stock' */
-  --secondary-foreground: oklch(0.985 0 0); /* Off White text on secondary if secondary is used as a background */
+  --secondary-foreground: oklch(0.145 0 0); /* Dark text on secondary if secondary is used as a background in dark mode */
   --action-green: oklch(0.83 0.21 145); /* Vibrant fresh green */
   --action-green-foreground: oklch(0.145 0 0); /* Dark readable text */
 
@@ -116,7 +116,7 @@
 
   /* --- IN STOCK (GREEN) --- */
   --secondary: oklch(80.048% 0.26403 141.463); /* A brighter legible green for 'In Stock' in dark mode */
-  --secondary-foreground: oklch(0.145 0 0); /* Dark text on secondary if secondary is used as a background in dark mode */
+  --secondary-foreground: oklch(0.985 0 0); /* Off White text on secondary if secondary is used as a background */
 
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);

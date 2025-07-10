@@ -53,7 +53,7 @@ module.exports = {
           DEFAULT: "oklch(var(--info))",
           foreground: "oklch(var(--info-foreground))",
       },
-      'accent-brand': {
+      accentBrand: {
           DEFAULT: "oklch(var(--accent-brand))",
           foreground: "oklch(var(--accent-brand-foreground))",
       },
