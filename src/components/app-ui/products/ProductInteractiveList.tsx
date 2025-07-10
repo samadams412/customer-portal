@@ -1,6 +1,7 @@
 // src/app/product/ProductInteractiveList.tsx
 "use client"
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginationContent, PaginationLink, PaginationPrevious, PaginationNext, PaginationItem } from '@/components/ui/pagination';
 import { Product } from '@/types/interface';
 // Import ProductCard from its dedicated file in the components directory
 import { ProductCard } from '@/components/app-ui/products/ProductCard';
@@ -13,6 +14,11 @@ const ProductInteractiveList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>(''); // 'price' or 'inStock'
   const [sortOrder, setSortOrder] = useState<string>('asc'); // 'asc' or 'desc'  
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 16;
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const paginatedProducts = products.slice(startIndex, endIndex)
 
   // useEffect to fetch products based on search, sortBy, and sortOrder changes
   //TODO: Look into library like SWR and React Query to get rid of useEffect
@@ -126,9 +132,48 @@ const ProductInteractiveList: React.FC = () => {
         {!loading && !error && products.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {/* Map over products and render ProductCard for each */}
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {paginatedProducts.map((product) =>(
+              <ProductCard key = {product.id} product={product}/>
             ))}
+          </div>
+        )}
+
+        {products.length > 0 && (
+          <div className="flex justify-center mt-8">
+            <Pagination>
+              <PaginationContent>
+                {/* Previous Button */}
+                <PaginationPrevious
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                />
+
+                {/* Page Numbers */}
+                {[...Array(Math.ceil(products.length / productsPerPage)).keys()].map((index) => {
+                  const page = index + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        isActive={page === currentPage}
+                        onClick={() => setCurrentPage(page)}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+
+                {/* Next Button */}
+                <PaginationNext
+                  onClick={() =>
+                    setCurrentPage((prev) => 
+                      Math.min(prev + 1, Math.ceil(products.length / productsPerPage))
+                    )
+                  }
+                />
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
       </div>
