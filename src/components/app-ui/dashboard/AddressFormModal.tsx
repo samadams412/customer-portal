@@ -108,7 +108,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
       if (!open) onClose(); // Only close if user initiates closing
       form.reset(); // Reset form state when dialog closes
     }}>
-      <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50">
+      <DialogContent className="sm:max-w-[425px] bg-primary-foreground text-gray-900 dark:text-gray-50">
         <DialogHeader>
           <DialogTitle>{addressToEdit ? "Edit Address" : "Add New Address"}</DialogTitle>
           <DialogDescription>
@@ -124,7 +124,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>Street</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main St" {...field} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="123 Main St" {...field} className="bg-primary-foreground dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,7 +137,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="Anytown" {...field} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="Anytown" {...field} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,7 +150,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>State (2-letter code)</FormLabel>
                   <FormControl>
-                    <Input placeholder="CA" {...field} maxLength={2} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="CA" {...field} maxLength={2} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

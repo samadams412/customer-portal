@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-accentBrand text-foreground p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen text-foreground p-4">
       {/* <HomePageAnimation I={images} /> */}
 
       <h1 className="text-6xl sm:text-6xl md:text-6xl font-extrabold text-center mb-8 drop-shadow-xl leading-tight">
@@ -19,8 +19,8 @@ export default function Home() {
 
       <Link href="/products" passHref>
         <Button
-          className="px-8 py-4  bg-black text-white  dark:bg-accent text-lg sm:text-xl font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-          variant="actionGreen"
+          className="px-8 py-4   text-lg sm:text-xl font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+          variant="secondary"
         >
           Shop Now
         </Button>
