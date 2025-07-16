@@ -100,6 +100,15 @@ export async function GET(_request: NextRequest) {
   }
 
   try {
+    const url = new URL(_request.url);
+    const sortBy = url.searchParams.get("sortBy") ?? "date";   // 'date' or 'amount'
+    const sortOrder = url.searchParams.get("order") ?? "desc"; // 'asc' or 'desc'
+
+    const orderByClause =
+      sortBy === "amount"
+        ? { totalAmount: sortOrder as "asc" | "desc" }
+        : { orderDate: sortOrder as "asc" | "desc" };
+        
     const orders = await prisma.order.findMany({
       where: {
         userId: user.id,
@@ -112,9 +121,7 @@ export async function GET(_request: NextRequest) {
         },
         shippingAddress: true,
       },
-      orderBy: {
-        orderDate: "desc",
-      },
+      orderBy: orderByClause,
     });
 
     return NextResponse.json(orders, { status: 200 });
@@ -129,4 +136,4 @@ export async function GET(_request: NextRequest) {
         { status: 500 }
       );
     }
-}
+  }
