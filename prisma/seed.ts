@@ -249,3 +249,43 @@
 //     await prisma.$disconnect();
 //     console.log('Seeding finished.');
 //   });
+// prisma/seed.ts
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+async function main() {
+  // Clear old discount codes
+  await prisma.discountCode.deleteMany();
+
+  // Create new discount codes
+  const codes = await prisma.discountCode.createMany({
+    data: [
+      {
+        code: 'SUMMER10',
+        percentage: 10,
+        expiresAt: new Date(new Date().setMonth(new Date().getMonth() + 1)), // 1 month from now
+      },
+      {
+        code: 'WELCOME5',
+        percentage: 5,
+        expiresAt: new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // 1 year from now
+      },
+      {
+        code: 'EXPIRED50',
+        percentage: 50,
+        expiresAt: new Date(new Date().setDate(new Date().getDate() - 1)), // already expired
+      },
+    ],
+  });
+
+  console.log('✅ Seeded discount codes:', codes);
+}
+
+main()
+  .catch((e) => {
+    console.error('❌ Seed failed:', e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
