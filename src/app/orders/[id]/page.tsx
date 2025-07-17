@@ -107,12 +107,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   if (isLoadingAuth || status === 'loading' || !resolvedOrderId || loadingOrderDetails) {
     return (
       <div className="container mx-auto p-6 space-y-8 min-h-screen">
-        <Skeleton className="h-10 w-64 mb-6 bg-gray-200 dark:bg-gray-700" />
-        <Card className="shadow-md p-6 bg-white dark:bg-gray-800">
-          <Skeleton className="h-8 w-full mb-4 bg-gray-200 dark:bg-gray-700" />
-          <Skeleton className="h-6 w-3/4 mb-6 bg-gray-200 dark:bg-gray-700" />
-          <Skeleton className="h-40 w-full mb-4 bg-gray-200 dark:bg-gray-700" />
-          <Skeleton className="h-24 w-full bg-gray-200 dark:bg-gray-700" />
+        <Skeleton className="h-10 w-64 mb-6 bg-accent" />
+        <Card className="shadow-md p-6 bg-primary-foreground">
+          <Skeleton className="h-8 w-full mb-4 bg-accent" />
+          <Skeleton className="h-6 w-3/4 mb-6 bg-accent" />
+          <Skeleton className="h-40 w-full mb-4 bg-accent" />
+          <Skeleton className="h-24 w-full bg-accent" />
         </Card>
       </div>
     );
@@ -146,12 +146,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     <main className="container mx-auto p-6 space-y-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Order Details</h1>
-        <Button onClick={() => router.push('/dashboard')} variant="outline" className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200">
+        <Button onClick={() => router.push('/dashboard')} variant="outline" className="text-gray-800 dark:text-gray-200">
           Back to Dashboard
         </Button>
       </div>
 
-      <Card className="shadow-xl bg-white dark:bg-gray-800 p-6">
+      <Card className="shadow-xl bg-accent p-6">
         <CardHeader className="px-0 pt-0 pb-4">
           <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
             Order #{order.id}

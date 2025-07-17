@@ -2,25 +2,30 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils"; // Optional utility to join classNames
+
+const PROMO_MESSAGES = [
+  "☀️ Summer Sale: Use code WELCOME5 for 5% off!",
+  "📦 Free delivery on orders $50+",
+  "🛍️ New arrivals daily · Don’t miss out!",
+];
 
 export default function PromoBanner() {
   return (
-    <div className="relative overflow-hidden w-full bg-secondary text-secondary-foreground py-4 shadow-md rounded-md mb-6">
+    <div className="relative overflow-hidden w-full bg-secondary/70 backdrop-blur-sm text-secondary-foreground py-4 shadow-md rounded-md mb-6">
       <motion.div
         className="flex whitespace-nowrap"
         initial={{ x: "100%" }}
         animate={{ x: "-100%" }}
         transition={{
-          duration: 20,
+          duration: 25,
           repeat: Infinity,
           ease: "linear",
         }}
       >
         {Array(2)
           .fill(
-            <span className="mx-8 font-semibold text-lg sm:text-xl tracking-wide">
-              ☀️ Summer Sale: Save 15% on all fresh produce! · Limited time only · Shop now! ·
+            <span className="mx-8 font-semibold text-sm sm:text-base md:text-lg tracking-wide">
+              {PROMO_MESSAGES.join(" · ")}
             </span>
           )
           .map((content, idx) => (
@@ -28,12 +33,7 @@ export default function PromoBanner() {
           ))}
       </motion.div>
 
-      {/* Optional CTA Button fixed at right (not part of scroll) */}
-      {/* <div className="absolute right-4 top-1/2 -translate-y-1/2">
-        <Button variant="secondary" size="sm" className="text-sm font-semibold">
-          Shop Deals
-        </Button>
-      </div> */}
+
     </div>
   );
 }

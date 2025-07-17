@@ -150,7 +150,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>State (2-letter code)</FormLabel>
                   <FormControl>
-                    <Input placeholder="CA" {...field} maxLength={2} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="TX" {...field} maxLength={2} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -163,7 +163,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>Zip Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="90210" {...field} className="dark:bg-gray-700 dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="90210" {...field} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,7 +173,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
               control={form.control}
               name="isDefault"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow bg-primary-foreground dark:border-gray-600">
                   <FormControl>
                     {/* Checkbox component needs to be imported or custom built */}
                     {/* For simplicity, using a native input type checkbox here */}
@@ -181,7 +181,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                       type="checkbox"
                       checked={field.value}
                       onChange={field.onChange}
-                      className="mt-1 dark:bg-gray-600 dark:border-gray-500"
+                      className="mt-1 bg-primary-foreground dark:border-gray-500"
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
