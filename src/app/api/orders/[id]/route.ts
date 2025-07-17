@@ -34,6 +34,7 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
             product: true, // Include product details for each item in the order
           },
         },
+        discountCode: true, // Include discount code details if applicable
         shippingAddress: true, // Include the shipping address details if available
       },
     });
