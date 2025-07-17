@@ -43,15 +43,23 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
-  orderDate: string; // Will parse to Date object for display
+  orderDate: string;
   totalAmount: number;
   subtotalAmount: number;
   taxAmount: number;
-  discountCode?: string | null;
-  discountAmount?: number | null;
-  deliveryType: 'DELIVERY' | 'PICKUP'; // These are string literals matching Prisma enums
-  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'; // String literals matching Prisma enums
+  deliveryType: 'DELIVERY' | 'PICKUP';
+  status: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   shippingAddressId?: string | null;
-  shippingAddress?: Address; // Includes nested address details if delivery
+  shippingAddress?: Address;
   orderItems: OrderItem[];
+
+  // Update these:
+  discountCode?: {
+    id: string;
+    code: string;
+    percentage: number;
+  } | null;
+
+  // Add this if you want to display calculated value
+  discountAmount?: number;
 }

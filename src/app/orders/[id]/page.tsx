@@ -50,11 +50,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   // Integrate useAuthRedirect hook
   const isLoadingAuth = useAuthRedirect(status, router);
-
   const [order, setOrder] = useState<Order | null>(null);
   const [loadingOrderDetails, setLoadingOrderDetails] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  
+  
   // --- Fetch Order Details ---
   const fetchOrderDetails = useCallback(async () => {
     // Only fetch if authenticated, user ID is available, and orderId is present
@@ -141,6 +141,8 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     );
   }
 
+  const discountTotal = (order.subtotalAmount-(order!.subtotalAmount * order!.discountCode!.percentage) / 100).toFixed(2)
+
   // --- Render Order Details ---
   return (
     <main className="container mx-auto p-6 space-y-8">
@@ -164,10 +166,21 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Subtotal: ${order.subtotalAmount.toFixed(2)}</p>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Tax: ${order.taxAmount.toFixed(2)}</p>
-              {order.discountAmount && order.discountAmount > 0 && (
-                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Discount: -${order.discountAmount.toFixed(2)}</p>
+              {order.discountCode && (
+                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                  Discount Code: {order.discountCode.code} ({order.discountCode.percentage}%)
+                </p>
               )}
+                {order.discountCode && (
+                  <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                    Discount: -${((order.subtotalAmount * order.discountCode.percentage) / 100).toFixed(2)}
+                  </p>
+                )}
+              {order.discountCode && (
+                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Discount Subtotal: ${discountTotal}</p>
+              )}
+              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Tax: ${order.taxAmount.toFixed(2)}</p>
+
               <p className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-2">Total: ${order.totalAmount.toFixed(2)}</p>
             </div>
             <div>
@@ -182,11 +195,6 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                     'bg-gray-500' // PENDING or CANCELLED
                   }`}>{order.status}</Badge>
               </p>
-              {order.discountCode && (
-                <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-2">
-                  Discount Code: <Badge variant="outline" className="ml-2">{order.discountCode}</Badge>
-                </p>
-              )}
             </div>
           </div>
 
