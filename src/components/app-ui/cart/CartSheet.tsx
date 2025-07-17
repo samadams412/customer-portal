@@ -22,12 +22,26 @@ import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAddresses } from "@/hooks/useAddresses";
+import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 
 export function CartSheet() {
-  const { cartItems, cartCount, cartTotal, clearCart } = useCart();
+    // Destructure new discount-related states and functions
+  const {
+    cartItems,
+    cartCount,
+    cartTotal, // This is now the subtotal before discount
+    clearCart,
+    discountCode,
+    discountAmount,
+    applyDiscountCode,
+    removeDiscount,
+    finalTotal, // The total after discount
+  } = useCart();
   const [deliveryType, setDeliveryType] = React.useState<'PICKUP' | 'DELIVERY'>('PICKUP');
   const [shippingAddressId, setShippingAddressId] = React.useState<string | null>(null);
+  const [discountInput, setDiscountInput] = React.useState<string>(''); // State for discount input field
 
   const {
     addresses,
@@ -42,12 +56,37 @@ export function CartSheet() {
     }
   }, [deliveryType, fetchAddresses]);
 
+    const handleApplyDiscount = () => {
+      if (discountInput.trim()) {
+        applyDiscountCode(discountInput.trim());
+      } else {
+        removeDiscount(); // If input is empty, remove any existing discount
+      }
+  };
+
   const handleCheckout = async () => {
+
+        // Basic validation
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty. Please add items before checking out.");
+      return;
+    }
+    if (deliveryType === 'DELIVERY' && !shippingAddressId) {
+      toast.error("Please select a shipping address for delivery.");
+      return;
+    }
+
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cartItems, deliveryType, shippingAddressId }),
+        body: JSON.stringify({
+          cartItems,
+          deliveryType,
+          shippingAddressId,
+          discountCode, // Pass the applied discount code
+          discountAmount, // Pass the calculated discount amount
+        }),
       });
 
       if (!res.ok) {
@@ -113,9 +152,58 @@ export function CartSheet() {
             </div>
 
             <SheetFooter className="border-t p-6 flex-col gap-4">
-              <div className="flex items-center justify-between text-base font-semibold">
-                <span>Subtotal:</span>
-                <span>{formatPrice(cartTotal)}</span>
+                  {/* Discount Code Input */}
+              <div className="w-full">
+                <Label htmlFor="discount-code" className="block mb-2 font-medium">Discount Code:</Label>
+                <div className="flex space-x-2">
+                  <Input
+                    id="discount-code"
+                    placeholder="Enter code"
+                    value={discountInput}
+                    onChange={(e) => setDiscountInput(e.target.value)}
+                    className="flex-1 border-border bg-input"
+                  />
+                  <Button
+                    onClick={handleApplyDiscount}
+                    variant="outline"
+                    className="shrink-0 text-primary border-primary hover:bg-primary/10"
+                    disabled={!discountInput.trim()} // Disable if input is empty
+                  >
+                    Apply
+                  </Button>
+                </div>
+                {discountCode && (
+                  <p className="text-sm text-secondary mt-2">
+                    Applied: {discountCode} (-{formatPrice(discountAmount)})
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={removeDiscount}
+                      className="text-destructive hover:text-destructive/80 ml-2 h-auto p-0"
+                    >
+                      Remove
+                    </Button>
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col items-end text-base font-semibold w-full">
+                {discountAmount > 0 ? (
+                  <>
+                    <div className="flex justify-between w-full">
+                      <span className="text-muted-foreground">Subtotal:</span>
+                      <span className="text-muted-foreground line-through">{formatPrice(cartTotal)}</span>
+                    </div>
+                    <div className="flex justify-between w-full">
+                      <span>Discounted Total:</span>
+                      <span>{formatPrice(finalTotal)}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between w-full">
+                    <span>Subtotal:</span>
+                    <span>{formatPrice(cartTotal)}</span>
+                  </div>
+                )}
               </div>
 
               <div className="w-full">
@@ -187,9 +275,11 @@ export function CartSheet() {
             <ShoppingCart className="h-16 w-16 text-muted" />
             <p className="text-xl font-semibold">Your cart is empty.</p>
             <p className="text-sm">Add items to get started!</p>
+            <Link href="/products">
             <Button className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90">
               Start Shopping
             </Button>
+            </Link>
           </div>
         )}
       </SheetContent>

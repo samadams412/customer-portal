@@ -1,108 +1,118 @@
 // prisma/schema.prisma
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"] // Keep if using Accelerate driver adapters
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // User
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relationships to other models
   addresses Address[] // A user can have multiple addresses
   // Removed: cart      Cart?     // No longer persisting cart in DB
-  orders    Order[]   // A user can place multiple orders
+  orders    Order[] // A user can place multiple orders
 }
 
 // Product
 model Product {
-  id          String    @id @default(uuid())
-  name        String
-  price       Float
-  imageUrl    String?
-  inStock     Boolean
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id        String   @id @default(uuid())
+  name      String
+  price     Float
+  imageUrl  String?
+  inStock   Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relationships
   // Removed: cartItems   CartItem[] // No longer persisting cart items in DB
-  orderItems  OrderItem[] // A product can be in many order items (historical record)
+  orderItems OrderItem[] // A product can be in many order items (historical record)
 }
 
 // Address
 // Stores multiple addresses for a user
 model Address {
+  id        String   @id @default(uuid())
+  street    String
+  city      String
+  state     String
+  zipCode   String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationship to User
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Relationship to Order (optional, if this address is used for shipping)
+  orders Order[] // An address can be used for multiple orders as shipping address
+}
+
+model DiscountCode {
   id         String    @id @default(uuid())
-  street     String
-  city       String
-  state      String
-  zipCode    String
-  isDefault  Boolean   @default(false)
+  code       String    @unique
+  percentage Float // e.g., 10 for 10% off
+  expiresAt  DateTime?
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
-  // Relationship to User
-  userId     String
-  user       User      @relation(fields: [userId], references: [id])
-
-  // Relationship to Order (optional, if this address is used for shipping)
-  orders     Order[]   // An address can be used for multiple orders as shipping address
+  Order Order[]
 }
 
 // Order
 // Represents a completed order (historical record)
 model Order {
-  id                String          @id @default(uuid())
-  orderDate         DateTime        @default(now())
-  totalAmount       Float
-  subtotalAmount    Float
-  taxAmount         Float
-  discountCode      String?
-  discountAmount    Float?
-  deliveryType      DeliveryTypeEnum
-  status            OrderStatusEnum
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  id             String           @id @default(uuid())
+  orderDate      DateTime         @default(now())
+  totalAmount    Float
+  subtotalAmount Float
+  taxAmount      Float
+  discountCodeId String? // Optional FK
+  discountCode   DiscountCode?    @relation(fields: [discountCodeId], references: [id])
+  deliveryType   DeliveryTypeEnum
+  status         OrderStatusEnum
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
 
   // Relationship to User
-  userId            String
-  user              User            @relation(fields: [userId], references: [id])
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
   // Relationship to Shipping Address (Optional, if deliveryType is DELIVERY)
   shippingAddressId String?
-  shippingAddress   Address?        @relation(fields: [shippingAddressId], references: [id])
+  shippingAddress   Address? @relation(fields: [shippingAddressId], references: [id])
 
   // Relationship to OrderItems
-  orderItems        OrderItem[]     // An order contains many order items
+  orderItems OrderItem[] // An order contains many order items
 }
 
 // OrderItem
 // Represents a specific product and its quantity in a completed order (snapshot)
 model OrderItem {
-  id             String    @id @default(uuid())
-  quantity       Int
-  priceAtPurchase Float    // Crucial: Price of the product when the order was placed
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id              String   @id @default(uuid())
+  quantity        Int
+  priceAtPurchase Float // Crucial: Price of the product when the order was placed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   // Relationships
-  orderId        String
-  order          Order     @relation(fields: [orderId], references: [id])
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
 
-  productId      String
-  product        Product   @relation(fields: [productId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 }
-
 
 // Enums for Order fields
 enum DeliveryTypeEnum {
@@ -111,9 +121,9 @@ enum DeliveryTypeEnum {
 }
 
 enum OrderStatusEnum {
-  PENDING      // Initial state, e.g., after order placed, before payment confirmed or processing begins
-  PROCESSING   // Order is being prepared/fulfilled
-  SHIPPED      // Order has left the warehouse/store for delivery (if applicable)
-  DELIVERED    // Order has been received
-  CANCELLED    // Order has been cancelled
+  PENDING // Initial state, e.g., after order placed, before payment confirmed or processing begins
+  PROCESSING // Order is being prepared/fulfilled
+  SHIPPED // Order has left the warehouse/store for delivery (if applicable)
+  DELIVERED // Order has been received
+  CANCELLED // Order has been cancelled
 }
