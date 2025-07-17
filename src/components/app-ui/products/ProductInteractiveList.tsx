@@ -1,180 +1,136 @@
-// src/app/product/ProductInteractiveList.tsx
-"use client"
-import React, { useState, useEffect } from 'react';
-import { Pagination, PaginationContent, PaginationLink, PaginationPrevious, PaginationNext, PaginationItem } from '@/components/ui/pagination';
-import { Product } from '@/types/interface';
-// Import ProductCard from its dedicated file in the components directory
-import { ProductCard } from '@/components/app-ui/products/ProductCard';
+"use client";
 
-// ProductInteractiveList Component: Handles search, sort, and displays product cards
+import React, { useState, useEffect } from "react";
+import { ProductCard } from "@/components/app-ui/products/ProductCard";
+import { useProducts } from "@/hooks/useProducts";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+} from "@/components/ui/pagination";
+
+const productsPerPage = 16;
+
 const ProductInteractiveList: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>(''); // 'price' or 'inStock'
-  const [sortOrder, setSortOrder] = useState<string>('asc'); // 'asc' or 'desc'  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 16;
+
+  const debouncedSearch = useDebouncedValue(searchQuery, 300);
+
+  const { products, isLoading, error } = useProducts({
+    search: debouncedSearch,
+    sortBy,
+    sortOrder,
+  });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, sortBy, sortOrder]);
+
+  const totalPages = Math.ceil(products.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
-  const paginatedProducts = products.slice(startIndex, endIndex)
-
-  // useEffect to fetch products based on search, sortBy, and sortOrder changes
-  //TODO: Look into library like SWR and React Query to get rid of useEffect
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true); // Set loading to true at the start of fetch
-      setError(null);   // Clear any previous errors
-
-      try {
-        // Construct URLSearchParams for query parameters
-        const params = new URLSearchParams();
-        if (searchQuery) {
-          params.append('search', searchQuery);
-        }
-        if (sortBy) {
-          params.append('sortBy', sortBy);
-          params.append('order', sortOrder);
-        }
-
-        const queryString = params.toString();
-        // Append query string to the API endpoint if it exists
-        const url = `/api/products${queryString ? `?${queryString}` : ''}`;
-
-        const response = await fetch(url);
-
-        // Check if the response was successful
-        if (!response.ok) {
-          // Throw an error with the status for better debugging
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: Product[] = await response.json(); // Parse JSON response
-        setProducts(data); // Update products state
-      } catch (e: any) {
-        console.error("Failed to fetch products:", e); // Log the error
-        setError(`Failed to load products: ${e.message}`); // Set user-friendly error message
-      } finally {
-        setLoading(false); // Set loading to false once fetching is complete (success or failure)
-      }
-    };
-
-    // Call the fetch function
-    fetchProducts();
-  }, [searchQuery, sortBy, sortOrder]); // Re-run effect when these dependencies change
+  const paginatedProducts = products.slice(startIndex, endIndex);
 
   return (
     <div className="min-h-screen bg-background p-8 font-sans text-foreground">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-extrabold mb-8 text-center">Our Products</h1>
 
-        {/* Search and Sort Controls */}
+        {/* Controls */}
         <div className="bg-card p-6 rounded-lg shadow-lg mb-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
-          {/* Search Input Field */}
-          <div className="w-full sm:w-1/2">
-            <label htmlFor="search" className="sr-only">Search Products</label>
-            <input
-              type="text"
-              id="search"
-              placeholder="Search products by name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-input"
-            />
-          </div>
+          <input
+            type="text"
+            id="search"
+            placeholder="Search products by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full sm:w-1/2 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+          />
 
-          {/* Sort By Dropdown */}
-          <div className="w-full sm:w-1/4">
-            <label htmlFor="sortBy" className="sr-only">Sort By</label>
-            <select
-              id="sortBy"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="w-full p-3 border border-border rounded-md bg-input focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="" className="dark:text-black">Sort By...</option> {/* Default option */}
-              <option value="price" className="dark:text-black">Price</option>
-              <option value="inStock" className="dark:text-black">In Stock</option>
-            </select>
-          </div>
+          <select
+            id="sortBy"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+          >
+            <option value="">Sort By...</option>
+            <option value="price">Price</option>
+            <option value="inStock">In Stock</option>
+          </select>
 
-          {/* Sort Order Dropdown */}
-          <div className="w-full sm:w-1/4">
-            <label htmlFor="sortOrder" className="sr-only">Sort Order</label>
-            <select
-              id="sortOrder"
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="w-full p-3 border border-border rounded-md bg-input focus:outline-none focus:ring-2 focus:ring-primary "
-            >
-              <option value="asc" className="dark:text-black">Ascending</option>
-              <option value="desc" className="dark:text-black">Descending</option>
-            </select>
-          </div>
+          <select
+            id="sortOrder"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
         </div>
 
-        {/* Conditional Rendering: Loading, Error, or Products Grid */}
-        {loading && (
+        {/* States */}
+        {isLoading && (
           <div className="text-center text-muted-foreground text-lg">Loading products...</div>
         )}
 
         {error && (
-          <div className="text-center text-destructive text-lg p-4 bg-destructive/10 border border-destructive rounded-md">
-            Error: {error}
+          <div className="text-center text-destructive text-lg">
+            {error.message || "Failed to load products."}
           </div>
         )}
 
-        {!loading && !error && products.length === 0 && (
-          <div className="text-center text-muted-foreground text-lg">No products found. Try a different search or sort option.</div>
+        {!isLoading && !error && paginatedProducts.length === 0 && (
+          <div className="text-center text-muted-foreground text-lg">No products found.</div>
         )}
 
-        {!loading && !error && products.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {/* Map over products and render ProductCard for each */}
-            {paginatedProducts.map((product) =>(
-              <ProductCard key = {product.id} product={product}/>
-            ))}
-          </div>
-        )}
+        {/* Grid */}
+        {!isLoading && paginatedProducts.length > 0 && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {paginatedProducts.map((product) => {
+                console.log(`[Render] ProductCard: ${product.id} - ${product.name}`);
+                return <ProductCard key={product.id} product={product} />;
+              })}
+            </div>
 
-        {products.length > 0 && (
-          <div className="flex justify-center mt-8">
-            <Pagination>
-              <PaginationContent>
-                {/* Previous Button */}
-                <PaginationPrevious
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                />
-
-                {/* Page Numbers */}
-                {[...Array(Math.ceil(products.length / productsPerPage)).keys()].map((index) => {
-                  const page = index + 1;
-                  return (
-                    <PaginationItem key={page}>
+            {/* Pagination */}
+            <div className="flex justify-center mt-8">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationPrevious
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(prev - 1, 1))
+                    }
+                  />
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <PaginationItem key={index}>
                       <PaginationLink
-                        isActive={page === currentPage}
-                        onClick={() => setCurrentPage(page)}
+                        isActive={currentPage === index + 1}
+                        onClick={() => setCurrentPage(index + 1)}
                       >
-                        {page}
+                        {index + 1}
                       </PaginationLink>
                     </PaginationItem>
-                  );
-                })}
-
-                {/* Next Button */}
-                <PaginationNext
-                  onClick={() =>
-                    setCurrentPage((prev) => 
-                      Math.min(prev + 1, Math.ceil(products.length / productsPerPage))
-                    )
-                  }
-                />
-              </PaginationContent>
-            </Pagination>
-          </div>
+                  ))}
+                  <PaginationNext
+                    onClick={() =>
+                      setCurrentPage((prev) =>
+                        Math.min(prev + 1, totalPages)
+                      )
+                    }
+                  />
+                </PaginationContent>
+              </Pagination>
+            </div>
+          </>
         )}
       </div>
     </div>

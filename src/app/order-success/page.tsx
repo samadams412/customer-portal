@@ -55,7 +55,7 @@ function OrderSuccessContent() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="w-full max-w-xl"
       >
-        <Card className="shadow-2xl bg-white dark:bg-gray-800">
+        <Card className="shadow-2xl br-primary">
           <CardHeader className="text-center">
             <motion.div
               initial={{ scale: 0 }}

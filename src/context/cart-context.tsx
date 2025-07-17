@@ -163,26 +163,32 @@ const addToCart = useCallback((product: Product, quantity: number) => {
     });
   }, []); // No dependencies
 
-  const clearCart = useCallback(() => {
-    try {
-      setCartItems([]);
-      //console.log("Cart cleared.");
-      toast({
-        className: "bg-[#22d444] scale-70", 
-        title: "SUCCESS!", 
-        description: "All items removed from cart!",
-        duration: 4000
-      });
-    } catch(error) {
-      toast({
-        className: "scale-70",
-        variant: "destructive", 
-        title: "ERROR!", 
-        description: "Could not add item(s) to cart. Please try again.",
-        duration: 4000
-      }); 
-    }
-  }, []);
+const clearCart = useCallback(() => {
+  try {
+    setCartItems([]);
+    setDiscountCode(null);
+    setDiscountAmount(0);
+
+    localStorage.removeItem(LOCAL_STORAGE_CART_KEY);
+    localStorage.removeItem(LOCAL_STORAGE_DISCOUNT_KEY);
+
+    toast({
+      className: "bg-[#22d444] scale-70",
+      title: "SUCCESS!",
+      description: "Cart and discount have been cleared!",
+      duration: 4000,
+    });
+  } catch (error) {
+    toast({
+      className: "scale-70",
+      variant: "destructive",
+      title: "ERROR!",
+      description: "Could not clear cart and discount. Please try again.",
+      duration: 4000,
+    });
+  }
+}, [toast]);
+
 
   // Calculate cart total (subtotal before discount/tax)
   const cartTotal = React.useMemo(() => {
