@@ -27,7 +27,8 @@ import Link from "next/link";
 
 
 export function CartSheet() {
-    // Destructure new discount-related states and functions
+  const [open, setOpen] = React.useState(false);
+  // Destructure new discount-related states and functions
   const {
     cartItems,
     cartCount,
@@ -51,6 +52,11 @@ export function CartSheet() {
   } = useAddresses();
 
   React.useEffect(() => {
+    const handleRouteChange = () => {
+      setOpen(false) // <-- Close the sheet when route changes
+    }
+    handleRouteChange()
+
     if (deliveryType === 'DELIVERY') {
       fetchAddresses();
     }
@@ -64,9 +70,8 @@ export function CartSheet() {
       }
   };
 
-  const handleCheckout = async () => {
-
-        // Basic validation
+  const handleCheckout = async () => {    
+    // Basic validation
     if (cartItems.length === 0) {
       toast.error("Your cart is empty. Please add items before checking out.");
       return;
@@ -90,8 +95,7 @@ export function CartSheet() {
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        toast.error(`Checkout failed: ${error.error}`);
+        toast.error(`Please log in to proceed with checkout.`); 
         return;
       }
       clearCart(); // Reset the cart here when we direct to checkout
@@ -106,11 +110,15 @@ export function CartSheet() {
   };
 
   return (
-    <Sheet onOpenChange={(open) => {
+    <Sheet
+      open={open} 
+      onOpenChange={(open) => {
+        setOpen(open);
         if (open && deliveryType === 'DELIVERY') {
           fetchAddresses();
         }
-      }}>
+      }}
+    >
 
       <SheetTrigger asChild>
         <Button
@@ -276,7 +284,12 @@ export function CartSheet() {
             <p className="text-xl font-semibold">Your cart is empty.</p>
             <p className="text-sm">Add items to get started!</p>
             <Link href="/products">
-            <Button className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button
+              className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
               Start Shopping
             </Button>
             </Link>
