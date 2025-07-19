@@ -90,8 +90,10 @@ export function CartSheet() {
       });
 
       if (!res.ok) {
-        const error = await res.json();
-        toast.error(`Checkout failed: ${error.error}`);
+        //Simplified unauthorized Toast Message 
+        //const error = await res.json();
+        // toast.error(`Checkout failed: ${error.error}`); 
+        toast.error(`Please log in to proceed with checkout.`); 
         return;
       }
       clearCart(); // Reset the cart here when we direct to checkout
