@@ -15,10 +15,25 @@ export function useProducts({
   sortOrder: string;
   category?: string;
 }) {
-  const query = qs.stringify({ search, sortBy, order: sortOrder, category });
-  const { data, error, isLoading } = useSWR<Product[]>(`/api/products?${query}`, fetcher, {
-    revalidateOnFocus: false,
-  });
+  const query = qs.stringify(
+    {
+      search,
+      sortBy,
+      order: sortOrder,
+      category,
+    },
+    { skipEmptyString: true, skipNull: true } // prevents `category=` if undefined
+  );
+console.log("[useProducts] final query:", `/api/products?${query}`);
+
+
+  const { data, error, isLoading } = useSWR<Product[]>(
+    `/api/products?${query}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
     products: data ?? [],
