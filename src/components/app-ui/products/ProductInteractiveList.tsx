@@ -12,6 +12,8 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Product } from "@/types/interface"; 
 
 const productsPerPage = 16;
 
@@ -35,10 +37,12 @@ const ProductInteractiveList: React.FC = () => {
     setCurrentPage(1);
   }, [debouncedSearch, sortBy, sortOrder, category]);
 
-  const totalPages = Math.ceil(products.length / productsPerPage);
+  const validProducts: Product[] = Array.isArray(products) ? products : [];
+
+  const totalPages = Math.ceil(validProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
-  const paginatedProducts = products.slice(startIndex, endIndex);
+  const paginatedProducts = validProducts.slice(startIndex, endIndex);
 
   return (
     <div className="min-h-screen bg-background p-8 font-sans text-foreground">
@@ -91,39 +95,41 @@ const ProductInteractiveList: React.FC = () => {
           </select>
         </div>
 
-        {/* States */}
+        {/* Loading State */}
         {isLoading && (
-          <div className="text-center text-muted-foreground text-lg">Loading products...</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {Array.from({ length: productsPerPage }).map((_, i) => (
+              <Skeleton key={i} className="h-80 w-full rounded-lg bg-muted" />
+            ))}
+          </div>
         )}
 
+        {/* Error State */}
         {error && (
           <div className="text-center text-destructive text-lg">
             {error.message || "Failed to load products."}
           </div>
         )}
 
+        {/* Empty State */}
         {!isLoading && !error && paginatedProducts.length === 0 && (
           <div className="text-center text-muted-foreground text-lg">No products found.</div>
         )}
 
-        {/* Grid */}
+        {/* Product Grid */}
         {!isLoading && paginatedProducts.length > 0 && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {paginatedProducts.map((product) => {
-                return <ProductCard key={product.id} product={product} />;
-              })}
+              {paginatedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
 
             {/* Pagination */}
             <div className="flex justify-center mt-8">
               <Pagination>
                 <PaginationContent>
-                  <PaginationPrevious
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                  />
+                  <PaginationPrevious onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
                   {Array.from({ length: totalPages }).map((_, index) => (
                     <PaginationItem key={index}>
                       <PaginationLink
@@ -135,11 +141,7 @@ const ProductInteractiveList: React.FC = () => {
                     </PaginationItem>
                   ))}
                   <PaginationNext
-                    onClick={() =>
-                      setCurrentPage((prev) =>
-                        Math.min(prev + 1, totalPages)
-                      )
-                    }
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   />
                 </PaginationContent>
               </Pagination>
