@@ -11,7 +11,7 @@ interface ProductCardProps {
 }
 
 function ProductCardComponent({ product }: ProductCardProps) {
-  console.log(`[Render] ProductCard: ${product.id} - ${product.name}`);
+  
 
   return (
     <div className="bg-card text-foreground rounded-lg shadow-md overflow-hidden 

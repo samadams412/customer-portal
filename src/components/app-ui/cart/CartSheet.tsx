@@ -55,7 +55,7 @@ export function CartSheet() {
     const handleRouteChange = () => {
       setOpen(false) // <-- Close the sheet when route changes
     }
-    handleRouteChange()
+    //handleRouteChange()
 
     if (deliveryType === 'DELIVERY') {
       fetchAddresses();
@@ -98,7 +98,7 @@ export function CartSheet() {
         toast.error(`Please log in to proceed with checkout.`); 
         return;
       }
-      clearCart(); // Reset the cart here when we direct to checkout
+      clearCart(); // Reset the cart here when we direct to checkout TODO: do this more gracefully
       const { url } = await res.json();
       if (url) {
         window.location.href = url;

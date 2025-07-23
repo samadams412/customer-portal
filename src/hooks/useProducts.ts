@@ -24,8 +24,6 @@ export function useProducts({
     },
     { skipEmptyString: true, skipNull: true } // prevents `category=` if undefined
   );
-console.log("[useProducts] final query:", `/api/products?${query}`);
-
 
   const { data, error, isLoading } = useSWR<Product[]>(
     `/api/products?${query}`,
