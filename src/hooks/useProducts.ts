@@ -8,12 +8,14 @@ export function useProducts({
   search,
   sortBy,
   sortOrder,
+  category,
 }: {
   search: string;
   sortBy: string;
   sortOrder: string;
+  category?: string;
 }) {
-  const query = qs.stringify({ search, sortBy, order: sortOrder });
+  const query = qs.stringify({ search, sortBy, order: sortOrder, category });
   const { data, error, isLoading } = useSWR<Product[]>(`/api/products?${query}`, fetcher, {
     revalidateOnFocus: false,
   });

@@ -19,6 +19,7 @@ const ProductInteractiveList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [category, setCategory] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
@@ -27,11 +28,12 @@ const ProductInteractiveList: React.FC = () => {
     search: debouncedSearch,
     sortBy,
     sortOrder,
+    category,
   });
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, sortBy, sortOrder]);
+  }, [debouncedSearch, sortBy, sortOrder, category]);
 
   const totalPages = Math.ceil(products.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
@@ -53,6 +55,19 @@ const ProductInteractiveList: React.FC = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full sm:w-1/2 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
           />
+
+          <select
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+          >
+            <option value="">All Categories</option>
+            <option value="meat">Meat</option>
+            <option value="dairy">Dairy</option>
+            <option value="produce">Produce</option>
+            <option value="dry goods">Dry Goods</option>
+          </select>
 
           <select
             id="sortBy"
@@ -96,7 +111,6 @@ const ProductInteractiveList: React.FC = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {paginatedProducts.map((product) => {
-                //console.log(`[Render] ProductCard: ${product.id} - ${product.name}`);
                 return <ProductCard key={product.id} product={product} />;
               })}
             </div>

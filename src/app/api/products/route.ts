@@ -8,21 +8,23 @@ export async function GET(req: NextRequest) {
   // Ensure sortBy matches the Prisma model fields ("price" or "inStock")
   const sortBy = searchParams.get("sortBy");
   const sortOrder = searchParams.get("order") === "desc" ? "desc" : "asc";
+  const category = searchParams.get("category") || "";
 
   try {
     const products = await prisma.product.findMany({
       where: {
         name: {
           contains: search,
-          mode: "insensitive", // Case-insensitive search
+          mode: "insensitive",
         },
+        ...(category && { category }), // Add category filter if provided
       },
       orderBy: sortBy
         ? {
             // Dynamically set the orderBy field based on sortBy parameter
             [sortBy === "price" ? "price" : "inStock"]: sortOrder,
           }
-        : undefined, // No specific order if sortBy is not provided
+        : undefined,
     });
 
     return NextResponse.json(products);
