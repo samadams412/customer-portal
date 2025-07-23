@@ -97,7 +97,7 @@ export function CartProvider({ children }: CartProviderProps) {
   // --- Reset Cart & Discount on Logout / Session Expiry ---
   useEffect(() => {
     if (status === 'unauthenticated' && !isLoading) {
-      console.log("User logged out or session expired. Clearing cart and discount.");
+      //console.log("User logged out or session expired. Clearing cart and discount.");
       setCartItems([]);
       setDiscountCode(null);
       setDiscountAmount(0);
