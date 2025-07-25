@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ProductCard } from "@/components/app-ui/products/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
@@ -37,6 +37,14 @@ const ProductInteractiveList: React.FC = () => {
     setCurrentPage(1);
   }, [debouncedSearch, sortBy, sortOrder, category]);
 
+  const productTopRef = useRef<HTMLHeadingElement | null>(null);
+
+  const scrollToTop = () => {
+    if (productTopRef.current) {
+      productTopRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const validProducts: Product[] = Array.isArray(products) ? products : [];
 
   const totalPages = Math.ceil(validProducts.length / productsPerPage);
@@ -47,7 +55,7 @@ const ProductInteractiveList: React.FC = () => {
   return (
     <div className="min-h-screen bg-background p-8 font-sans text-foreground">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-8 text-center">Our Products</h1>
+        <h1 ref={productTopRef} className="text-4xl font-extrabold mb-8 text-center">Our Products</h1>
 
         {/* Controls */}
         <div className="bg-card p-6 rounded-lg shadow-lg mb-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
@@ -129,20 +137,34 @@ const ProductInteractiveList: React.FC = () => {
             <div className="flex justify-center mt-8">
               <Pagination>
                 <PaginationContent>
-                  <PaginationPrevious onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
+                  <PaginationPrevious
+                    onClick={() => {
+                      setCurrentPage((prev) => Math.max(prev - 1, 1));
+                      scrollToTop();
+                    }}
+                  />
+
                   {Array.from({ length: totalPages }).map((_, index) => (
                     <PaginationItem key={index}>
                       <PaginationLink
                         isActive={currentPage === index + 1}
-                        onClick={() => setCurrentPage(index + 1)}
+                        onClick={() => {
+                          setCurrentPage(index + 1);
+                          scrollToTop();
+                        }}
                       >
                         {index + 1}
                       </PaginationLink>
                     </PaginationItem>
                   ))}
+
                   <PaginationNext
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    onClick={() => {
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                      scrollToTop();
+                    }}
                   />
+
                 </PaginationContent>
               </Pagination>
             </div>
