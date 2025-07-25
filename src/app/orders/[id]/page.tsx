@@ -141,7 +141,10 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     );
   }
 
-  const discountTotal = (order.subtotalAmount-(order!.subtotalAmount * order!.discountCode!.percentage) / 100).toFixed(2)
+  const discountTotal = order.discountCode
+  ? (order.subtotalAmount - (order.subtotalAmount * order.discountCode.percentage) / 100).toFixed(2)
+  : order.subtotalAmount.toFixed(2);
+
 
   // --- Render Order Details ---
   return (
