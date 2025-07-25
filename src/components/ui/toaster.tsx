@@ -31,12 +31,13 @@ export function Toaster() {
       ))}
 
       <ToastViewport
-        className={`
-          fixed z-50 pointer-events-none w-full max-w-sm px-4
-          sm:bottom-4 sm:left-4
-          top-4 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:top-auto
-        `}
-      />
+      className={`
+        fixed z-50 pointer-events-none w-full max-w-sm px-4
+        bottom-4 left-1/2 -translate-x-1/2
+        sm:left-4 sm:translate-x-0
+      `}
+    />
+
     </ToastProvider>
   )
 }
