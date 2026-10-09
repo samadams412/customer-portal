@@ -26,23 +26,22 @@ const ProductInteractiveList: React.FC = () => {
 
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
 
-  const { products, isLoading, error } = useProducts({
+  const { products, total, isLoading, error } = useProducts({
     search: debouncedSearch,
     sortBy,
     sortOrder,
     category,
+    page: currentPage,
+    pageSize: productsPerPage,
   });
 
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch, sortBy, sortOrder, category]);
 
-  const validProducts: Product[] = Array.isArray(products) ? products : [];
+  const paginatedProducts: Product[] = Array.isArray(products) ? products : [];
 
-  const totalPages = Math.ceil(validProducts.length / productsPerPage);
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const paginatedProducts = validProducts.slice(startIndex, endIndex);
+  const totalPages = Math.max(1, Math.ceil(total / productsPerPage));
 
   return (
     <div className="min-h-screen bg-background p-8 font-sans text-foreground">
