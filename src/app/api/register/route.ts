@@ -1,6 +1,7 @@
 // /api/register/route.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 export async function POST(req: Request) {
@@ -15,9 +16,16 @@ export async function POST(req: Request) {
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: { email, password: hashed },
-  });
+  try {
+    await prisma.user.create({
+      data: { email, password: hashed },
+    });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      return NextResponse.json({ error: 'User already exists' }, { status: 409 });
+    }
+    throw error;
+  }
 
   return NextResponse.json({ success: true });
 }
