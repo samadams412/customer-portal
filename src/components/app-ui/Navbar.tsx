@@ -64,7 +64,7 @@ if (status === "loading") {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between h-16">
         {/* Logo/Site Title */}
         <Link href="/" className="text-xl text-secondary font-bold  hover:text-secondary/90 transition-colors">
-          Grocery Portal
+          Home Portal
         </Link>
 
         {/* Desktop Navigation (hidden on small screens) */}

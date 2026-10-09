@@ -15,7 +15,7 @@ export default function HeroSection() {
         className="text-5xl md:text-6xl font-extrabold leading-tight mb-6 text-primary"
       >
         Welcome to Your
-        <span className="block text-accent-brand drop-shadow-md">Grocery Portal</span>
+        <span className="block text-accent-brand drop-shadow-md">Home Portal</span>
       </motion.h1>
 
       <motion.p
@@ -24,7 +24,7 @@ export default function HeroSection() {
         transition={{ delay: 0.2, duration: 0.6 }}
         className="text-lg md:text-xl max-w-2xl text-muted-foreground mb-8"
       >
-        Discover fresh groceries, exclusive deals, and a seamless shopping experience crafted just for you.
+        Discover furniture, decor, and kitchen essentials, exclusive deals, and a seamless shopping experience crafted just for you.
       </motion.p>
 
       <motion.div

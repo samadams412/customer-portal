@@ -10,9 +10,9 @@ export default function Footer() {
         
         {/* Logo & About */}
         <div>
-          <h2 className="text-2xl font-bold mb-2">Grocery Portal</h2>
+          <h2 className="text-2xl font-bold mb-2">Home Portal</h2>
           <p className="text-sm">
-            Your trusted source for fresh produce and everyday essentials. Fast, sustainable, and local.
+            Your trusted source for furniture, decor, and kitchen essentials. Fast, sustainable, and local.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              <span>support@groceryportal.com</span>
+              <span>support@homeportal.com</span>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="w-4 h-4" />
@@ -59,7 +59,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-secondary-foreground/20 mt-10 pt-6 text-center text-sm">
-        &copy; {new Date().getFullYear()} Grocery Portal. All rights reserved.
+        &copy; {new Date().getFullYear()} Home Portal. All rights reserved.
       </div>
     </footer>
   );

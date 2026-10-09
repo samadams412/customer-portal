@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { ProductCard } from "@/components/app-ui/products/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
+import { useProductCategories } from "@/hooks/useProductCategories";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   Pagination,
@@ -17,6 +18,10 @@ import { Product } from "@/types/interface";
 
 const productsPerPage = 16;
 
+// e.g. "home-decoration" -> "Home Decoration"
+const formatCategoryLabel = (slug: string) =>
+  slug.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
 const ProductInteractiveList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
@@ -25,6 +30,7 @@ const ProductInteractiveList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
+  const { categories } = useProductCategories();
 
   const { products, total, isLoading, error } = useProducts({
     search: debouncedSearch,
@@ -66,10 +72,11 @@ const ProductInteractiveList: React.FC = () => {
             className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
           >
             <option value="">All Categories</option>
-            <option value="meat">Meat</option>
-            <option value="dairy">Dairy</option>
-            <option value="produce">Produce</option>
-            <option value="dry goods">Dry Goods</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>
+                {formatCategoryLabel(c)}
+              </option>
+            ))}
           </select>
 
           <select

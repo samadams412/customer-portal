@@ -6,8 +6,8 @@ import { CheckCircle, Truck, Leaf } from 'lucide-react';
 const features = [
   {
     icon: CheckCircle,
-    title: 'Farm-Fresh Quality',
-    description: 'We partner with trusted local growers to ensure the freshest, healthiest ingredients every day.',
+    title: 'Quality You Can Trust',
+    description: 'We partner with trusted makers to bring you durable, well-crafted furniture and home goods.',
     color: 'text-secondary',
   },
   {
