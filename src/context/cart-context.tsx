@@ -190,7 +190,8 @@ const clearCart = useCallback(() => {
 }, [toast]);
 
 
-  // Calculate cart total (subtotal before discount/tax)
+  // Display-only subtotal (before discount/tax). The server re-prices every
+  // item from the database at checkout, so this value is never trusted for billing.
   const cartTotal = React.useMemo(() => {
     return cartItems.reduce((total, item) => total + (item.product.price * item.quantity), 0);
   }, [cartItems]);

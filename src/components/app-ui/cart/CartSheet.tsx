@@ -90,7 +90,6 @@ export function CartSheet() {
           deliveryType,
           shippingAddressId,
           discountCode, // Pass the applied discount code
-          discountAmount, // Pass the calculated discount amount
         }),
       });
 
