@@ -124,10 +124,13 @@ const newOrder = await prisma.order.create({
     };
   });
 
-  const baseUrl =
-    process.env.VERCEL === "1"
-      ? "https://customer-portal-alpha-nine.vercel.app"
-      : "http://localhost:3000";
+  // Behind a proxy (e.g. Vercel), the real public host/proto come from the
+  // forwarded headers rather than the raw request, which may see an internal origin.
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const forwardedProto = req.headers.get("x-forwarded-proto");
+  const baseUrl = forwardedHost
+    ? `${forwardedProto ?? "https"}://${forwardedHost}`
+    : req.nextUrl.origin;
 
 const session = await stripe.checkout.sessions.create({
   payment_method_types: ["card"],
