@@ -35,13 +35,14 @@ export function Navbar() {
   // Define navigation links for easier mapping
   const navLinks = [
     { href: "/products", label: "Products" },
+    { href: "/about", label: "About" },
     // Only show Dashboard if logged in
     ...(isLoggedIn ? [{ href: "/dashboard", label: "Dashboard" }] : []),
   ];
 
 if (status === "loading") {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background shadow-sm">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between h-16">
         <Skeleton className="h-6 w-32 rounded" /> {/* Logo placeholder */}
         <div className="hidden md:flex space-x-4">
@@ -60,10 +61,10 @@ if (status === "loading") {
 
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-background shadow-sm">
+    <header className="sticky top-0 z-40 w-full border-b bg-background/90 backdrop-blur">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between h-16">
         {/* Logo/Site Title */}
-        <Link href="/" className="text-xl text-secondary font-bold  hover:text-secondary/90 transition-colors">
+        <Link href="/" className="font-heading text-2xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
           Home Portal
         </Link>
 
@@ -76,8 +77,8 @@ if (status === "loading") {
                   <Link
                     href={link.href}
                     className={cn(
-                      "text-sm font-medium transition-colors hover:text-primary",
-                      pathname === link.href ? "text-primary" : "text-foreground"
+                      "text-sm font-medium transition-colors hover:text-foreground",
+                      pathname === link.href ? "text-foreground underline underline-offset-8 decoration-cta decoration-2" : "text-muted-foreground"
                     )}
                   >
                     {link.label}
@@ -91,7 +92,7 @@ if (status === "loading") {
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link href="/auth">
-                    <Button variant="outline" className="text-primary border-primary hover:bg-primary/10 transition-colors">
+                    <Button variant="outline" className="transition-colors">
                       Login / Register
                     </Button>
                   </Link>
@@ -129,8 +130,8 @@ if (status === "loading") {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "text-lg font-medium transition-colors hover:text-primary",
-                      pathname === link.href ? "text-primary" : "text-foreground"
+                      "text-lg font-medium transition-colors hover:text-foreground",
+                      pathname === link.href ? "text-foreground underline underline-offset-8 decoration-cta decoration-2" : "text-muted-foreground"
                     )}
                     onClick={() => setIsSheetOpen(false)} // Close sheet on link click
                   >
