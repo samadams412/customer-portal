@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ProductCard } from "@/components/app-ui/products/ProductCard";
 import { useProducts } from "@/hooks/useProducts";
 import { useProductCategories } from "@/hooks/useProductCategories";
@@ -59,6 +59,14 @@ const ProductInteractiveList: React.FC = () => {
     setCurrentPage(1);
   }, [debouncedSearch, sortBy, sortOrder, category]);
 
+  const productTopRef = useRef<HTMLHeadingElement | null>(null);
+
+  const scrollToTop = () => {
+    if (productTopRef.current) {
+      productTopRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const paginatedProducts: Product[] = Array.isArray(products) ? products : [];
 
   const totalPages = Math.max(1, Math.ceil(total / productsPerPage));
@@ -66,7 +74,7 @@ const ProductInteractiveList: React.FC = () => {
   return (
     <div className="min-h-screen bg-background px-4 py-10 sm:px-8 text-foreground">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl md:text-5xl font-semibold mb-8">Shop all</h1>
+        <h1 ref={productTopRef} className="text-4xl md:text-5xl font-semibold mb-8">Shop all</h1>
 
         {/* Controls */}
         <div className="mb-10 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
@@ -153,7 +161,12 @@ const ProductInteractiveList: React.FC = () => {
             <div className="flex justify-center mt-12">
               <Pagination>
                 <PaginationContent>
-                  <PaginationPrevious onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
+                  <PaginationPrevious
+                    onClick={() => {
+                      setCurrentPage((prev) => Math.max(prev - 1, 1));
+                      scrollToTop();
+                    }}
+                  />
                   {getPaginationRange(currentPage, totalPages).map((page, index) =>
                     page === "dots" ? (
                       <PaginationItem key={`dots-${index}`}>
@@ -163,7 +176,10 @@ const ProductInteractiveList: React.FC = () => {
                       <PaginationItem key={page}>
                         <PaginationLink
                           isActive={currentPage === page}
-                          onClick={() => setCurrentPage(page)}
+                          onClick={() => {
+                            setCurrentPage(page);
+                            scrollToTop();
+                          }}
                         >
                           {page}
                         </PaginationLink>
@@ -171,8 +187,12 @@ const ProductInteractiveList: React.FC = () => {
                     )
                   )}
                   <PaginationNext
-                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    onClick={() => {
+                      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                      scrollToTop();
+                    }}
                   />
+
                 </PaginationContent>
               </Pagination>
             </div>
