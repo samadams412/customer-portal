@@ -14,10 +14,9 @@ function ProductCardComponent({ product }: ProductCardProps) {
   
 
   return (
-    <div className="bg-card text-foreground rounded-lg shadow-md overflow-hidden 
-                    transform transition-transform duration-300 hover:scale-105 
-                    flex flex-col p-4 border border-border space-y-4">
-      <div className="relative w-full h-48 overflow-hidden rounded-md">
+    <div className="group bg-card text-card-foreground rounded-xl overflow-hidden border border-border
+                    flex flex-col transition-shadow duration-200 hover:shadow-lg">
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-muted">
         <Image
           src={
             product.imageUrl ||
@@ -27,28 +26,28 @@ function ProductCardComponent({ product }: ProductCardProps) {
           }
           alt={product.name}
           fill
-          className="object-cover rounded-md"
+          className="object-cover transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
           sizes="(max-width: 768px) 100vw, 400px"
         />
       </div>
 
-      <div className="flex-grow flex flex-col justify-between">
-        <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+      <div className="flex-grow flex flex-col gap-1 px-5 pt-5">
+        <h3 className="text-lg font-medium leading-snug line-clamp-2">
           {product.name}
         </h3>
-        <p className="text-lg font-bold mb-2 text-primary">
+        <p className="text-base font-semibold tabular-nums">
           {formatPrice(product.price)}
         </p>
         <p
           className={`text-sm font-medium ${
-            product.inStock ? 'text-secondary' : 'text-destructive'
+            product.inStock ? 'text-success' : 'text-destructive'
           }`}
         >
           {product.inStock ? 'In Stock' : 'Out of Stock'}
         </p>
       </div>
 
-      <div className="mt-auto pt-4">
+      <div className="mt-auto p-5 pt-4">
         <AddToCartForm product={product} />
       </div>
     </div>

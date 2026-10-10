@@ -127,7 +127,7 @@ export function CartSheet() {
           className="relative h-9 w-9"
         >
           {cartCount > 0 && (
-            <Badge className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold bg-primary text-primary-foreground">
+            <Badge className="absolute -right-2 -top-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs font-bold bg-cta text-cta-foreground">
               {cartCount}
             </Badge>
           )}
@@ -140,7 +140,7 @@ export function CartSheet() {
           <SheetDescription className="sr-only">
             Review items in your cart and choose a delivery option before checkout.
           </SheetDescription>
-          <SheetTitle className="text-2xl font-semibold">
+          <SheetTitle className="font-heading text-2xl font-semibold">
             Cart {cartCount > 0 && `(${cartCount})`}
           </SheetTitle>
         </SheetHeader>
@@ -168,19 +168,19 @@ export function CartSheet() {
                     placeholder="Enter code"
                     value={discountInput}
                     onChange={(e) => setDiscountInput(e.target.value)}
-                    className="flex-1 border-border bg-input"
+                    className="flex-1"
                   />
                   <Button
                     onClick={handleApplyDiscount}
                     variant="outline"
-                    className="shrink-0 text-primary border-primary hover:bg-primary/10"
+                    className="shrink-0"
                     disabled={!discountInput.trim()} // Disable if input is empty
                   >
                     Apply
                   </Button>
                 </div>
                 {discountCode && (
-                  <p className="text-sm text-secondary mt-2">
+                  <p className="text-sm text-success mt-2">
                     Applied: {discountCode} (-{formatPrice(discountAmount)})
                     <Button
                       variant="link"
@@ -237,7 +237,7 @@ export function CartSheet() {
                   {loadingAddresses ? (
                     <p className="text-sm text-muted-foreground">Loading addresses...</p>
                   ) : addressError ? (
-                    <p className="text-sm text-red-500">{addressError}</p>
+                    <p className="text-sm text-destructive">{addressError}</p>
                   ) : addresses.length === 0 ? (
                     <p className="text-sm text-muted-foreground">No addresses found. Please add one in your profile.</p>
                   ) : (
@@ -264,7 +264,9 @@ export function CartSheet() {
 
               <Button
                 onClick={handleCheckout}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                variant="cta"
+                size="lg"
+                className="w-full"
               >
                 Proceed to Checkout
               </Button>
@@ -279,12 +281,13 @@ export function CartSheet() {
           </>
         ) : (
           <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground px-4">
-            <ShoppingCart className="h-16 w-16 text-muted" />
-            <p className="text-xl font-semibold">Your cart is empty.</p>
+            <ShoppingCart className="h-12 w-12 mb-2 text-primary" strokeWidth={1.5} aria-hidden="true" />
+            <p className="font-heading text-2xl font-semibold text-foreground">Your cart is empty.</p>
             <p className="text-sm">Add items to get started!</p>
             <Link href="/products">
             <Button
-              className="mt-4 bg-primary text-primary-foreground hover:bg-primary/90"
+              variant="cta"
+              className="mt-4"
               onClick={() => {
                 setOpen(false);
               }}

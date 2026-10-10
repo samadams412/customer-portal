@@ -1,4 +1,4 @@
-/* src/app/global.css */
+/* src/app/globals.css */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -7,16 +7,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-fraunces);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -46,99 +42,67 @@
 }
 
 :root {
-  --accent-brand: oklch(0.85 0.18 70); /* Sunny orange */
-  --accent-brand-foreground: oklch(0.145 0 0); /* Dark text for contrast */
-  --radius: 0.625rem;
-  --card: oklch(1 0 0); /* White */
-  --card-foreground: oklch(0.145 0 0); /* Near Black */
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0); /* Dark Grey */
-  --primary-foreground: oklch(0.985 0 0); /* Off White */
-  --info: oklch(0.9 0.1 240);              /* Calm blue for neutral info or alerts */
-  --warning: oklch(0.85 0.18 80);          /* Warm yellow for low-stock or caution */
-  --highlight: oklch(0.98 0.1 120);        /* Greenish-yellow for deals/promos */
-
-  /* --- IN STOCK (GREEN) --- */
-  --secondary: oklch(78.512% 0.25454 143.58); /* A legible green for 'In Stock' */
-  --secondary-foreground: oklch(0.145 0 0); /* Dark text on secondary if secondary is used as a background in dark mode */
-  --action-green: oklch(0.83 0.21 145); /* Vibrant fresh green */
-  --action-green-foreground: oklch(0.145 0 0); /* Dark readable text */
-
-
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  /* --- OUT OF STOCK (RED) --- */
-  --destructive: oklch(0.577 0.245 27.325); /* A clear red for 'Out of Stock' */
-
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-
-  /* Add any new custom colors here for light mode */
+  /* Design system: design-system/customer-portal/MASTER.md (warm stone + amber) */
+  --radius: 0.5rem;
+  --background: #FAF5F2;
+  --foreground: #1C1917;
+  --card: #FFFFFF;
+  --card-foreground: #1C1917;
+  --popover: #FFFFFF;
+  --popover-foreground: #1C1917;
+  --primary: #78716C;
+  --primary-foreground: #FFFFFF;
+  --secondary: #A8A29E;
+  --secondary-foreground: #1C1917;
+  --muted: #F5F0EC;
+  --muted-foreground: #57534E;
+  --accent: #F0E9E3;
+  --accent-foreground: #1C1917;
+  --destructive: #DC2626;
+  --border: #E7E1DC;
+  --input: #E7E1DC;
+  --ring: #78716C;
+  /* CTA (add to cart, checkout, shop now) */
+  --cta: #D97706;
+  --cta-foreground: #1C1917;
+  /* In-stock / success states */
+  --success: #15803D;
+  --success-foreground: #FFFFFF;
+  --chart-1: #D97706;
+  --chart-2: #78716C;
+  --chart-3: #15803D;
+  --chart-4: #A8A29E;
+  --chart-5: #B45309;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --accent-brand: oklch(0.78 0.22 70); /* Slightly darker orange */
-  --accent-brand-foreground: oklch(0.985 0 0); /* Light text for contrast */
-  --action-green: oklch(0.72 0.23 145); /* Slightly darker but vibrant */
-  --action-green-foreground: oklch(0.985 0 0); /* Light readable text */
-
-
-  /* --- IN STOCK (GREEN) --- */
-  --secondary: oklch(80.048% 0.26403 141.463); /* A brighter legible green for 'In Stock' in dark mode */
-  --secondary-foreground: oklch(0.985 0 0); /* Off White text on secondary if secondary is used as a background */
-
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  /* --- OUT OF STOCK (RED) --- */
-  --destructive: oklch(0.704 0.191 22.216); /* A clear red for 'Out of Stock' in dark mode */
-
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-
-  /* Add any new custom colors here for dark mode */
+  --background: #1C1917;
+  --foreground: #FAF5F2;
+  --card: #292524;
+  --card-foreground: #FAF5F2;
+  --popover: #292524;
+  --popover-foreground: #FAF5F2;
+  --primary: #D6D3D1;
+  --primary-foreground: #1C1917;
+  --secondary: #44403C;
+  --secondary-foreground: #FAF5F2;
+  --muted: #292524;
+  --muted-foreground: #A8A29E;
+  --accent: #383330;
+  --accent-foreground: #FAF5F2;
+  --destructive: #F87171;
+  --border: #44403C;
+  --input: #44403C;
+  --ring: #A8A29E;
+  --cta: #F59E0B;
+  --cta-foreground: #1C1917;
+  --success: #4ADE80;
+  --success-foreground: #1C1917;
+  --chart-1: #F59E0B;
+  --chart-2: #A8A29E;
+  --chart-3: #4ADE80;
+  --chart-4: #D6D3D1;
+  --chart-5: #FBBF24;
 }
 
 @layer base {
@@ -146,6 +110,9 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  h1, h2, h3 {
+    @apply font-heading tracking-tight;
   }
 }
