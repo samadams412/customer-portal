@@ -12,11 +12,25 @@ import {
   PaginationLink,
   PaginationPrevious,
   PaginationNext,
+  PaginationEllipsis,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Product } from "@/types/interface"; 
+import { Product } from "@/types/interface";
 
 const productsPerPage = 16;
+
+// Builds a truncated page list: first, last, current ± 1, with "dots" for gaps.
+function getPaginationRange(current: number, total: number): (number | "dots")[] {
+  const range: (number | "dots")[] = [];
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+      range.push(i);
+    } else if (range[range.length - 1] !== "dots") {
+      range.push("dots");
+    }
+  }
+  return range;
+}
 
 // e.g. "home-decoration" -> "Home Decoration"
 const formatCategoryLabel = (slug: string) =>
@@ -50,26 +64,28 @@ const ProductInteractiveList: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil(total / productsPerPage));
 
   return (
-    <div className="min-h-screen bg-background p-8 font-sans text-foreground">
+    <div className="min-h-screen bg-background px-4 py-10 sm:px-8 text-foreground">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold mb-8 text-center">Our Products</h1>
+        <h1 className="text-4xl md:text-5xl font-semibold mb-8">Shop all</h1>
 
         {/* Controls */}
-        <div className="bg-card p-6 rounded-lg shadow-lg mb-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="mb-10 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4">
           <input
             type="text"
             id="search"
+            aria-label="Search products"
             placeholder="Search products by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full sm:w-1/2 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+            className="w-full sm:w-1/2 h-11 px-3 border border-input rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
           />
 
           <select
             id="category"
+            aria-label="Filter by category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+            className="w-full sm:w-1/4 h-11 px-3 border border-input rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/50"
           >
             <option value="">All Categories</option>
             {categories.map((c) => (
@@ -81,9 +97,10 @@ const ProductInteractiveList: React.FC = () => {
 
           <select
             id="sortBy"
+            aria-label="Sort by"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+            className="w-full sm:w-1/4 h-11 px-3 border border-input rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/50"
           >
             <option value="">Sort By...</option>
             <option value="price">Price</option>
@@ -92,9 +109,10 @@ const ProductInteractiveList: React.FC = () => {
 
           <select
             id="sortOrder"
+            aria-label="Sort order"
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="w-full sm:w-1/4 p-3 border border-border rounded-md bg-input dark:bg-primary focus:outline-none focus:ring-2 focus:ring-primary dark:text-gray-800"
+            className="w-full sm:w-1/4 h-11 px-3 border border-input rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/50"
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
@@ -103,9 +121,9 @@ const ProductInteractiveList: React.FC = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: productsPerPage }).map((_, i) => (
-              <Skeleton key={i} className="h-80 w-full rounded-lg bg-muted" />
+              <Skeleton key={i} className="h-96 w-full rounded-xl bg-muted" />
             ))}
           </div>
         )}
@@ -125,27 +143,33 @@ const ProductInteractiveList: React.FC = () => {
         {/* Product Grid */}
         {!isLoading && paginatedProducts.length > 0 && (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {paginatedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-12">
               <Pagination>
                 <PaginationContent>
                   <PaginationPrevious onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <PaginationItem key={index}>
-                      <PaginationLink
-                        isActive={currentPage === index + 1}
-                        onClick={() => setCurrentPage(index + 1)}
-                      >
-                        {index + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
+                  {getPaginationRange(currentPage, totalPages).map((page, index) =>
+                    page === "dots" ? (
+                      <PaginationItem key={`dots-${index}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={currentPage === page}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
                   <PaginationNext
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                   />
