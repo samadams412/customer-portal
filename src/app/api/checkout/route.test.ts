@@ -67,6 +67,8 @@ describe("POST /api/checkout", () => {
         deliveryType: "PICKUP",
         discountCode: null,
       }),
+      headers: new Headers(),
+      nextUrl: new URL("https://portal.test/checkout"),
     } as any;
 
     await POST(req);
