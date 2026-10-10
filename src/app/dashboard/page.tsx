@@ -83,8 +83,8 @@ export default function DashboardPage() {
   // --- Render Loading / Error States ---
   if (isLoadingAuth || status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <p className="text-gray-700 dark:text-gray-300">Loading dashboard...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading dashboard...</p>
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function DashboardPage() {
 return (
 <main className="container mx-auto p-6">
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-    <h1 className="text-3xl font-bold">Dashboard</h1>
+    <h1 className="font-heading text-3xl font-semibold">Dashboard</h1>
     {session?.user?.email && (
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
         <div className="text-sm text-muted-foreground text-center sm:text-left">

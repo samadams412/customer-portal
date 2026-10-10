@@ -81,7 +81,7 @@ export function ChangePasswordForm() {
               {...register('currentPassword')}
             />
             {errors.currentPassword && (
-              <p className="text-sm text-red-500 mt-1">{errors.currentPassword.message}</p>
+              <p className="text-sm text-destructive mt-1">{errors.currentPassword.message}</p>
             )}
           </div>
 
@@ -96,7 +96,7 @@ export function ChangePasswordForm() {
             />
             <PasswordStrengthBar password={password} /> {/* ✅ Show bar below input */}
             {errors.newPassword && (
-              <p className="text-sm text-red-500 mt-1">{errors.newPassword.message}</p>
+              <p className="text-sm text-destructive mt-1">{errors.newPassword.message}</p>
             )}
           </div>
 
@@ -108,11 +108,11 @@ export function ChangePasswordForm() {
               {...register('confirmNewPassword')}
             />
             {errors.confirmNewPassword && (
-              <p className="text-sm text-red-500 mt-1">{errors.confirmNewPassword.message}</p>
+              <p className="text-sm text-destructive mt-1">{errors.confirmNewPassword.message}</p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" variant="cta" disabled={loading}>
             {loading ? 'Updating...' : 'Update Password'}
           </Button>
         </form>

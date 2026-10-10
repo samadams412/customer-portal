@@ -48,36 +48,36 @@ export default function OrdersPage() {
 
   return (
     <main className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Your Orders</h1>
+      <h1 className="font-heading text-3xl font-semibold mb-6">Your Orders</h1>
 
       {/* Sorting controls container */}
       <div className="flex gap-4 items-center mb-6">
-    
+
         {/* Label and dropdown for "Sort By" */}
-        <label className="text-sm font-medium text-white">
+        <label className="text-sm font-medium text-foreground">
           Sort By:
           <select
             value={sortBy} // Controlled component: the current sorting field state ('date' or 'amount')
             onChange={(e) => setSortBy(e.target.value)} // When user selects a new option, update sortBy state
-            className="ml-2 px-2 py-1 border rounded-md text-black bg-white" // Tailwind CSS styling for margin, padding, border, rounded corners
+            className="ml-2 px-2 py-1 border border-input rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/50"
           >
             {/* Options for sorting criteria */}
-            <option className="text-black" value="date">Order Date</option>
-            <option className="text-black" value="amount">Total Amount</option>
+            <option value="date">Order Date</option>
+            <option value="amount">Total Amount</option>
           </select>
         </label>
 
         {/* Label and dropdown for "Order" (ascending or descending) */}
-        <label className="text-sm font-medium text-white">
+        <label className="text-sm font-medium text-foreground">
           Order:
           <select
             value={order} // Controlled component: current sort order state ('asc' or 'desc')
             onChange={(e) => setOrder(e.target.value as 'asc' | 'desc')} // Update order state on change
-            className="ml-2 px-2 py-1 border rounded-md text-black bg-white" // Similar styling as above
+            className="ml-2 px-2 py-1 border border-input rounded-md bg-background text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring/50"
           >
             {/* Options for sort direction */}
-            <option className="text-black" value="desc">Descending</option>
-            <option className="text-black" value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+            <option value="asc">Ascending</option>
           </select>
         </label>
 

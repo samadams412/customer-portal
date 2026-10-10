@@ -25,22 +25,22 @@ export function AddressListSection({
   onDeleteAddress,
 }: AddressListSectionProps) {
   return (
-    <section className="  rounded-lg shadow-xl p-6">
+    <section className="bg-card text-card-foreground rounded-lg shadow-xl p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold text-primary ">Your Addresses</h2>
-        <Button onClick={onAddAddress} className="" variant="outline">
+        <h2 className="font-heading text-2xl font-semibold">Your Addresses</h2>
+        <Button onClick={onAddAddress} variant="cta">
           Add New Address
         </Button>
       </div>
       {loading ? (
         <div className="space-y-4">
-          <Skeleton className="h-24 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
-          <Skeleton className="h-24 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
+          <Skeleton className="h-24 w-full rounded-md bg-muted" />
+          <Skeleton className="h-24 w-full rounded-md bg-muted" />
         </div>
       ) : error ? (
-        <p className="text-red-500 text-center">{error}</p>
+        <p className="text-destructive text-center">{error}</p>
       ) : addresses.length === 0 ? (
-        <p className="text-gray-600 dark:text-gray-400 text-center">No addresses found. Add one!</p>
+        <p className="text-muted-foreground text-center">No addresses found. Add one!</p>
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {addresses.map((address) => (

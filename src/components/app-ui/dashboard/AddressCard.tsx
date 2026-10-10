@@ -3,6 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Address } from "@/types/interface"; // Import the Address interface
 
 interface AddressCardProps {
@@ -15,11 +16,9 @@ export function AddressCard({ address, onEdit, onDelete }: AddressCardProps) {
   return (
     <Card className="shadow-md">
       <CardHeader>
-        <CardTitle className="text-lg flex items-center">
+        <CardTitle className="font-heading text-lg font-semibold flex items-center gap-2">
           {address.isDefault && (
-            <span className="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-              Default
-            </span>
+            <Badge className="bg-success text-success-foreground">Default</Badge>
           )}
           {address.street}
         </CardTitle>
