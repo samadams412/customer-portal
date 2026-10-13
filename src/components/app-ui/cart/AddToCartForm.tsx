@@ -24,7 +24,7 @@ export function AddToCartForm({ product }: AddToCartFormProps) {
       dismiss(); // Clears any existing stuck toast before showing a new one
 
       toast({
-        className: "bg-[#22d444] scale-90 sm:scale-75",
+        className: "bg-success text-success-foreground scale-90 sm:scale-75",
         title: "Success",
         description: `${product.name} (${quantity}) added to cart!`,
         duration: 3000, // Ensure toast disappears on mobile
@@ -48,15 +48,18 @@ export function AddToCartForm({ product }: AddToCartFormProps) {
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
-          className="bg-accent"
+          size="icon"
+          aria-label="Decrease quantity"
           onClick={() => setQuantity(Math.max(1, quantity - 1))}
           disabled={!product.inStock}
         >
           −
         </Button>
-        <span className="w-8 text-center">{quantity}</span>
+        <span className="w-8 text-center tabular-nums" aria-live="polite">{quantity}</span>
         <Button
           variant="outline"
+          size="icon"
+          aria-label="Increase quantity"
           onClick={() => setQuantity(quantity + 1)}
           disabled={!product.inStock}
         >
@@ -67,8 +70,7 @@ export function AddToCartForm({ product }: AddToCartFormProps) {
       {/* Add to Cart Button */}
       <Button
         onClick={handleAddToCart}
-        className="bg-accent"
-        variant="actionGreen"
+        variant="cta"
         disabled={!product.inStock}
       >
         Add to Cart

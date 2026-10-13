@@ -2,59 +2,104 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log("🌱 Seeding started...");
+// Home & lifestyle themed catalog, sourced live from DummyJSON (dummyjson.com, MIT licensed).
+// Only categories that fit a home-goods storefront are pulled in — furniture, home decor,
+// and kitchenware. Categories like electronics, apparel, or groceries are skipped on purpose
+// so the catalog reads as one themed store, not a general marketplace.
+const DUMMYJSON_CATEGORIES = ['furniture', 'home-decoration', 'kitchen-accessories'];
 
-  // Step 1: Delete OrderItems → Orders → Products (in that order)
+type DummyProduct = {
+  title: string;
+  price: number;
+  category: string;
+  stock: number;
+  images: string[];
+  thumbnail: string;
+};
+
+type SeedProduct = {
+  name: string;
+  price: number;
+  category: string;
+  imageUrl: string;
+  inStock: boolean;
+};
+
+// Generic finish/size modifiers that plausibly apply across furniture, decor, and kitchenware.
+const VARIANT_MODIFIERS = [
+  'Black', 'White', 'Walnut Finish', 'Oak Finish', 'Matte Grey',
+  'Natural', 'Compact', 'Large', 'Set of 2', 'Brushed Steel',
+];
+
+async function fetchCategoryProducts(category: string): Promise<DummyProduct[]> {
+  const res = await fetch(
+    `https://dummyjson.com/products/category/${category}?limit=100&select=title,price,category,stock,images,thumbnail`
+  );
+  if (!res.ok) throw new Error(`DummyJSON fetch failed for ${category}: ${res.status}`);
+  const data = await res.json();
+  return data.products;
+}
+
+function toSeedProduct(p: DummyProduct, imageUrl: string): SeedProduct {
+  return {
+    name: p.title,
+    price: p.price,
+    category: p.category,
+    imageUrl,
+    inStock: p.stock > 0,
+  };
+}
+
+// Scales a real product into `count` believable variants: a modifier appended to the name,
+// a small price jitter, and the image rotated from that same product's own image pool
+// (never a fabricated image).
+function buildVariants(p: DummyProduct, count: number): SeedProduct[] {
+  const images = p.images.length > 0 ? p.images : [p.thumbnail];
+  const variants: SeedProduct[] = [toSeedProduct(p, images[0])];
+
+  for (let i = 1; i < count; i++) {
+    const modifier = VARIANT_MODIFIERS[(i - 1) % VARIANT_MODIFIERS.length];
+    const jitter = 1 + (((i * 37) % 21) - 10) / 100; // deterministic +/-10% jitter
+    const image = images[i % images.length];
+    variants.push({
+      name: `${p.title} — ${modifier}`,
+      price: Math.round(p.price * jitter * 100) / 100,
+      category: p.category,
+      imageUrl: image,
+      inStock: ((p.stock + i * 13) % 100) > 10, // mostly in stock, some sold out for pagination/UI testing
+    });
+  }
+
+  return variants;
+}
+
+async function buildCatalog(): Promise<SeedProduct[]> {
+  const catalog: SeedProduct[] = [];
+  for (const category of DUMMYJSON_CATEGORIES) {
+    const products = await fetchCategoryProducts(category);
+    for (const p of products) {
+      catalog.push(...buildVariants(p, 7)); // ~7x scale-up for pagination/perf testing
+    }
+  }
+  return catalog;
+}
+
+async function main() {
+  console.log('🌱 Seeding started...');
+
   await prisma.$transaction([
     prisma.orderItem.deleteMany(),
     prisma.order.deleteMany(),
-    prisma.product.deleteMany(), // Now safe to delete
+    prisma.product.deleteMany(),
   ]);
-  console.log("🧹 Cleared order-related product data.");
+  console.log('🧹 Cleared order-related product data.');
 
-  // Step 2: Seed Products
-  const productsData = [
-    { name: "Organic Apples", price: 3.99, category: "produce", imageUrl: 'https://images.pexels.com/photos/2487443/pexels-photo-2487443.jpeg', inStock: true },
-    { name: "Whole Milk (Gallon)", price: 4.50, category: "dairy", imageUrl: 'https://cdn.pixabay.com/photo/2017/07/05/15/41/milk-2474993_1280.jpg', inStock: true },
-    { name: "Artisan Bread", price: 2.75, category: "dry goods", imageUrl: 'https://cdn.pixabay.com/photo/2018/06/10/20/30/bread-3467243_1280.jpg', inStock: true },
-    { name: "Cage-Free Eggs (Dozen)", price: 5.20, category: "dairy", imageUrl: 'https://cdn.pixabay.com/photo/2022/07/26/13/55/egg-7345934_1280.jpg', inStock: false },
-    { name: "Avocado (Each)", price: 1.50, category: "produce", imageUrl: 'https://cdn.pixabay.com/photo/2015/08/10/12/02/avocados-882635_1280.jpg', inStock: true },
-    { name: "Salmon Fillet (LB)", price: 12.99, category: "meat", imageUrl: 'https://cdn.pixabay.com/photo/2017/05/19/13/06/salmon-2326479_1280.jpg', inStock: true },
-    { name: "Organic Spinach", price: 3.20, category: "produce", imageUrl: 'https://cdn.pixabay.com/photo/2018/06/08/22/16/spinach-3463248_1280.jpg', inStock: true },
-    { name: "Ground Coffee (Bag)", price: 8.99, category: "dry goods", imageUrl: 'https://cdn.pixabay.com/photo/2018/06/06/10/13/coffee-beans-3457587_1280.jpg', inStock: true },
-    { name: "Blueberries (Pint)", price: 4.99, category: "produce", imageUrl: 'https://cdn.pixabay.com/photo/2020/07/18/13/01/blueberry-5417154_1280.jpg', inStock: true },
-    { name: "Cheddar Cheese (Block)", price: 7.50, category: "dairy", imageUrl: 'https://as2.ftcdn.net/v2/jpg/00/75/52/99/1000_F_75529950_twH3BeBeXBTbXxsf8CiVkJBRsze9BBHv.jpg', inStock: true },
-    { name: "Butter (LB)", price: 5.20, category: "dairy", imageUrl: 'https://cdn.pixabay.com/photo/2018/05/18/12/55/butter-3411126_960_720.jpg', inStock: true },
-    { name: "Yellow Onions (2 LB Bag)", price: 3.50, category: "produce", imageUrl: 'https://cdn.pixabay.com/photo/2016/05/16/22/47/onions-1397037_960_720.jpg', inStock: true },
-    { name: "Orange Juice (1/2 Gallon)", price: 4.99, category: "produce", imageUrl: 'https://images.pexels.com/photos/3603/healthy-breakfast-orange-juice-health.jpg', inStock: true },
-    { name: "Olive Oil (16 OZ)", price: 9.99, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg', inStock: true },
-    { name: "All Purpose Flour (Bag)", price: 5.99, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/6287223/pexels-photo-6287223.jpeg', inStock: false },
-    { name: "White Rice (LB)", price: 1.50, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg', inStock: true },
-    { name: "Chicken Breast (LB)", price: 5.99, category: "meat", imageUrl: 'https://cdn.pixabay.com/photo/2014/03/05/01/20/chicken-breast-279847_960_720.jpg', inStock: true },
-    { name: "Spaghetti (LB)", price: 1.99, category: "dry goods", imageUrl: 'https://cdn.pixabay.com/photo/2017/04/06/14/18/spaghetti-2208374_960_720.jpg', inStock: true },
-    { name: "Garlic (Each)", price: 0.70, category: "produce", imageUrl: 'https://images.pexels.com/photos/1392585/pexels-photo-1392585.jpeg', inStock: true },
-    { name: "Carrots (Bag)", price: 2.50, category: "produce", imageUrl: 'https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg', inStock: true },
-    { name: "Tomatoes (LB)", price: 1.99, category: "produce", imageUrl: 'https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg', inStock: true },
-    { name: "Honey (12 OZ)", price: 3.99, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/302163/pexels-photo-302163.jpeg', inStock: false },
-    { name: "Lentils (LB)", price: 2.50, category: "dry goods", imageUrl: 'https://cdn.pixabay.com/photo/2025/06/12/14/45/lentils-9656338_960_720.jpg', inStock: true },
-    { name: "Oats (24 OZ)", price: 3.99, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/11112773/pexels-photo-11112773.jpeg', inStock: true },
-    { name: "Strawberries (LB)", price: 2.99, category: "produce", imageUrl: 'https://images.pexels.com/photos/70746/strawberries-red-fruit-royalty-free-70746.jpeg', inStock: true },
-    { name: "Bagels (6 ct)", price: 2.99, category: "dry goods", imageUrl: 'https://cdn.pixabay.com/photo/2021/09/17/09/42/bagel-6632148_960_720.jpg', inStock: true },
-    { name: "Raw Shrimp (LB)", price: 8.99, category: "meat", imageUrl: 'https://images.pexels.com/photos/21771249/pexels-photo-21771249.jpeg', inStock: true },
-    { name: "Sea Salt (LB)", price: 8.50, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/7717461/pexels-photo-7717461.jpeg', inStock: false },
-    { name: "Peppercorns (LB)", price: 15.99, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/8559086/pexels-photo-8559086.jpeg', inStock: true },
-    { name: "Lemons (Each)", price: 0.80, category: "produce", imageUrl: 'https://images.pexels.com/photos/266346/pexels-photo-266346.jpeg', inStock: true },
-    { name: "Limes (Each)", price: 0.50, category: "produce", imageUrl: 'https://images.pexels.com/photos/186841/pexels-photo-186841.jpeg', inStock: false },
-    { name: "Sweet Corn (Each)", price: 0.50, category: "produce", imageUrl: 'https://images.pexels.com/photos/16732706/pexels-photo-16732706.jpeg', inStock: true },
-    { name: "Potatoes (5 LB)", price: 5.99, category: "produce", imageUrl: 'https://cdn.pixabay.com/photo/2018/12/29/13/42/farm-market-potatoes-3901428_960_720.jpg', inStock: true },
-    { name: "Peanut Butter (LB)", price: 4.99, category: "dry goods", imageUrl: 'https://images.pexels.com/photos/6659898/pexels-photo-6659898.jpeg', inStock: false }
-  ];
+  console.log('📦 Fetching home & lifestyle catalog from DummyJSON...');
+  const productsData = await buildCatalog();
 
   await prisma.product.createMany({ data: productsData });
   console.log(`✅ Seeded ${productsData.length} products.`);
 
-  // Step 3: Always reseed discount codes
   await prisma.discountCode.deleteMany();
   await prisma.discountCode.createMany({
     data: [
@@ -76,15 +121,15 @@ async function main() {
     ],
   });
 
-  console.log("✅ Discount codes seeded.");
+  console.log('✅ Discount codes seeded.');
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seed failed:", e);
+    console.error('❌ Seed failed:', e);
     process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();
-    console.log("🌱 Seeding complete.");
+    console.log('🌱 Seeding complete.');
   });

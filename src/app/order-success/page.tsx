@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 
 function OrderSuccessContent() {
   const router = useRouter();
@@ -55,7 +56,7 @@ function OrderSuccessContent() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className="w-full max-w-xl"
       >
-        <Card className="shadow-2xl br-primary">
+        <Card className="shadow-lg">
           <CardHeader className="text-center">
             <motion.div
               initial={{ scale: 0 }}
@@ -63,20 +64,20 @@ function OrderSuccessContent() {
               transition={{ type: 'spring', stiffness: 200, damping: 12 }}
               className="mx-auto mb-4"
             >
-              <div className="rounded-full bg-green-500 p-4 text-white w-16 h-16 flex items-center justify-center">
-                ✓
+              <div className="rounded-full bg-success text-success-foreground w-16 h-16 flex items-center justify-center">
+                <Check className="h-8 w-8" aria-hidden="true" />
               </div>
             </motion.div>
-            <CardTitle className="text-2xl font-semibold text-green-600 dark:text-green-400">
+            <CardTitle className="font-heading text-3xl font-semibold">
               Order Placed Successfully!
             </CardTitle>
             <p className="text-muted-foreground mt-2">Order #{order.id}</p>
           </CardHeader>
 
           <CardContent className="space-y-4 text-center">
-            <p className="text-lg text-gray-800 dark:text-gray-200">
+            <p className="text-lg">
               Your order is now{' '}
-              <Badge className="bg-blue-600 text-white">{order.status}</Badge>
+              <Badge variant="secondary">{order.status}</Badge>
             </p>
 
             <p className="text-sm text-muted-foreground">
@@ -85,17 +86,17 @@ function OrderSuccessContent() {
                 : "We'll notify you when your order is ready for pickup."}
             </p>
 
-            <div className="text-left mt-6 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="text-left mt-6 space-y-2 text-sm text-muted-foreground">
               <p><strong>Placed on:</strong> {new Date(order.orderDate).toLocaleString()}</p>
               <p><strong>Total:</strong> ${order.totalAmount.toFixed(2)}</p>
               <p><strong>Delivery Type:</strong> {order.deliveryType}</p>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-center gap-3 pt-6">
-              <Button onClick={() => router.push(`/orders/${order.id}`)} variant="default">
+              <Button onClick={() => router.push(`/orders/${order.id}`)} variant="cta">
                 View Order Details
               </Button>
-              <Button onClick={() => router.push('/dashboard')} variant="secondary">
+              <Button onClick={() => router.push('/dashboard')} variant="outline">
                 Back to Dashboard
               </Button>
             </div>
@@ -111,8 +112,8 @@ export default function OrderSuccessPage() {
   return (
     <Suspense fallback={
       <main className="container mx-auto p-6 min-h-screen">
-        <Skeleton className="h-12 w-2/3 bg-gray-200 dark:bg-gray-700 mb-4" />
-        <Skeleton className="h-60 w-full bg-gray-200 dark:bg-gray-700" />
+        <Skeleton className="h-12 w-2/3 bg-muted mb-4" />
+        <Skeleton className="h-60 w-full bg-muted" />
       </main>
     }>
       <OrderSuccessContent />

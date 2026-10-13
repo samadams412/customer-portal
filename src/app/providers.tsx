@@ -2,6 +2,7 @@
 'use client'; // This directive makes the component a Client Component
 
 import { SessionProvider } from "next-auth/react"; // Import SessionProvider
+import { MotionConfig } from "framer-motion";
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -11,7 +12,8 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      {children}
+      {/* Honors prefers-reduced-motion for every framer-motion animation */}
+      <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </SessionProvider>
   );
 }

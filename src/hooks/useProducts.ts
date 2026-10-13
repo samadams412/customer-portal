@@ -2,6 +2,8 @@ import useSWR from "swr";
 import qs from "query-string";
 import { Product } from "@/types/interface";
 
+type ProductsResponse = { products: Product[]; total: number; page: number; pageSize: number };
+
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export function useProducts({
@@ -9,11 +11,15 @@ export function useProducts({
   sortBy,
   sortOrder,
   category,
+  page,
+  pageSize,
 }: {
   search: string;
   sortBy: string;
   sortOrder: string;
   category?: string;
+  page: number;
+  pageSize: number;
 }) {
   const query = qs.stringify(
     {
@@ -21,11 +27,13 @@ export function useProducts({
       sortBy,
       order: sortOrder,
       category,
+      page,
+      pageSize,
     },
     { skipEmptyString: true, skipNull: true } // prevents `category=` if undefined
   );
 
-  const { data, error, isLoading } = useSWR<Product[]>(
+  const { data, error, isLoading } = useSWR<ProductsResponse>(
     `/api/products?${query}`,
     fetcher,
     {
@@ -34,7 +42,8 @@ export function useProducts({
   );
 
   return {
-    products: data ?? [],
+    products: data?.products ?? [],
+    total: data?.total ?? 0,
     error,
     isLoading,
   };

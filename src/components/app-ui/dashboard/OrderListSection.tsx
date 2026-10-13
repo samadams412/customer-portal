@@ -24,20 +24,20 @@ export function OrderListSection({
     .slice(0, 1); // take most recent 2
 
   return (
-    <section className="rounded-lg shadow-xl p-6">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-50 mb-4">
+    <section className="bg-card text-card-foreground rounded-lg shadow-xl p-6">
+      <h2 className="font-heading text-2xl font-semibold mb-4">
         Your Recent Orders
       </h2>
 
       {loading ? (
         <div className="space-y-4">
-          <Skeleton className="h-40 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
-          <Skeleton className="h-40 w-full rounded-md bg-gray-200 dark:bg-gray-700" />
+          <Skeleton className="h-40 w-full rounded-md bg-muted" />
+          <Skeleton className="h-40 w-full rounded-md bg-muted" />
         </div>
       ) : error ? (
-        <p className="text-red-500 text-center">{error}</p>
+        <p className="text-destructive text-center">{error}</p>
       ) : orders.length === 0 ? (
-        <p className="text-gray-600 dark:text-gray-400 text-center">
+        <p className="text-muted-foreground text-center">
           No orders found. Start shopping!
         </p>
       ) : (

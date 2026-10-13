@@ -67,7 +67,7 @@ export default async function ProductPage({
   // Note: Perhaps modularize this into its own Error Component
   if (displayError) {
     return (
-      <div className="max-w-xl mx-auto p-6 text-center text-red-500">
+      <div className="max-w-xl mx-auto p-6 text-center text-destructive">
         <p>{displayError}</p>
       </div>
     );
@@ -80,7 +80,7 @@ export default async function ProductPage({
   // As a safeguard, ensuring product exists before rendering its properties.
   if (!product) { 
       return (
-          <div className="max-w-xl mx-auto p-6 text-center text-gray-500">
+          <div className="max-w-xl mx-auto p-6 text-center text-muted-foreground">
               <p>Product data could not be loaded. Please try again later.</p>
           </div>
       );
@@ -88,7 +88,7 @@ export default async function ProductPage({
 
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-xl mt-8">
+    <div className="max-w-xl mx-auto p-6 bg-card text-card-foreground border border-border rounded-xl mt-8">
       {product.imageUrl && (
         <div className="relative w-full h-80 mb-6 rounded-md overflow-hidden">
           <Image
@@ -96,22 +96,22 @@ export default async function ProductPage({
             alt={product.name}
             fill // Use 'fill' for responsive image sizing within a parent div
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // Optimize image loading
-            className="object-cover transition-transform duration-300 hover:scale-105"
+            className="object-cover"
             priority // Prioritize loading for LCP
           />
         </div>
       )}
-      <h1 className="text-3xl font-bold mb-3 text-gray-900 dark:text-gray-50">{product.name}</h1>
-      <p className="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-4">
+      <h1 className="text-4xl font-semibold mb-3">{product.name}</h1>
+      <p className="text-2xl font-semibold tabular-nums mb-4">
         ${product.price.toFixed(2)}
       </p>
-      <p className="text-base text-gray-700 dark:text-gray-300 mb-6">
-        <span className={`font-medium ${product.inStock ? "text-green-600" : "text-red-600"}`}>
+      <p className="text-base mb-6">
+        <span className={`font-medium ${product.inStock ? "text-success" : "text-destructive"}`}>
           {product.inStock ? "In Stock" : "Out of Stock"}
         </span>
       </p>
       {/* Add more product details here as needed */}
-      <p className="text-gray-600 dark:text-gray-400 text-sm">
+      <p className="text-muted-foreground text-sm">
         Added on: {new Date(product.createdAt).toLocaleDateString()}
       </p>
 

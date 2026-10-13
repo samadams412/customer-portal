@@ -3,14 +3,16 @@
 // allowing metadata export and server-side rendering.
 
 import './globals.css'; // Your global styles
-import { Inter } from 'next/font/google'; // Assuming Inter font is used
+import { Fraunces, Inter } from 'next/font/google';
 import { Navbar } from '@/components/app-ui/Navbar'; // Your Navbar component (will be client component)
 import Providers from '@/app/providers'; // Import the new Providers client component
 import { ThemeProvider } from 'next-themes';
 import { CartProvider } from '@/context/cart-context';
 import { Toaster } from '@/components/ui/sonner';
+import Footer from '@/components/app-ui/home/Footer';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces' });
 
 // Metadata for the root layout (Server Component only feature)
 export const metadata = {
@@ -25,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} transition-colors duration-500`}>
+      <body className={`${inter.variable} ${fraunces.variable} transition-colors duration-500`}>
         
         {/* Wrap your Navbar and page content with the Providers component.
             This ensures that any client components (like Navbar) have access
@@ -41,6 +43,7 @@ export default function RootLayout({
             <CartProvider>
             <Navbar /> {/* Your Navbar, now correctly nested within SessionProvider's client boundary */}
             {children} {/* Your page content */}
+            <Footer />
             <Toaster />
             </CartProvider>
           </ThemeProvider>

@@ -28,8 +28,30 @@ export async function POST(req: NextRequest) {
 
   const deliveryTypeEnum = deliveryType === "DELIVERY" ? "DELIVERY" : "PICKUP";
 
+  // Re-fetch products from the DB so price and stock come from a trusted source,
+  // never from the client-sent cart.
+  const dbProducts = await prisma.product.findMany({
+    where: { id: { in: cartItems.map((item) => item.product.id) } },
+  });
+  const dbProductsById = new Map(dbProducts.map((p) => [p.id, p]));
+
+  const missing = cartItems.filter((item) => !dbProductsById.has(item.product.id));
+  if (missing.length > 0) {
+    return NextResponse.json({ error: "One or more products no longer exist" }, { status: 400 });
+  }
+
+  const outOfStock = cartItems
+    .map((item) => dbProductsById.get(item.product.id)!)
+    .filter((product) => !product.inStock);
+  if (outOfStock.length > 0) {
+    return NextResponse.json(
+      { error: `Out of stock: ${outOfStock.map((p) => p.name).join(", ")}` },
+      { status: 400 }
+    );
+  }
+
   const subtotalAmount = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + dbProductsById.get(item.product.id)!.price * item.quantity,
     0
   );
 
@@ -81,28 +103,34 @@ const newOrder = await prisma.order.create({
       create: cartItems.map((item) => ({
         productId: item.product.id,
         quantity: item.quantity,
-        priceAtPurchase: item.product.price,
+        priceAtPurchase: dbProductsById.get(item.product.id)!.price,
       })),
     },
   },
 });
 
 
-  const line_items = cartItems.map((item) => ({
-    price_data: {
-      currency: "usd",
-      product_data: {
-        name: item.product.name,
+  const line_items = cartItems.map((item) => {
+    const dbProduct = dbProductsById.get(item.product.id)!;
+    return {
+      price_data: {
+        currency: "usd",
+        product_data: {
+          name: dbProduct.name,
+        },
+        unit_amount: Math.round(dbProduct.price * 100),
       },
-      unit_amount: Math.round(item.product.price * 100),
-    },
-    quantity: item.quantity,
-  }));
+      quantity: item.quantity,
+    };
+  });
 
-  const baseUrl =
-    process.env.VERCEL === "1"
-      ? "https://customer-portal-alpha-nine.vercel.app"
-      : "http://localhost:3000";
+  // Behind a proxy (e.g. Vercel), the real public host/proto come from the
+  // forwarded headers rather than the raw request, which may see an internal origin.
+  const forwardedHost = req.headers.get("x-forwarded-host");
+  const forwardedProto = req.headers.get("x-forwarded-proto");
+  const baseUrl = forwardedHost
+    ? `${forwardedProto ?? "https"}://${forwardedHost}`
+    : req.nextUrl.origin;
 
 const session = await stripe.checkout.sessions.create({
   payment_method_types: ["card"],

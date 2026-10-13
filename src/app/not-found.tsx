@@ -7,7 +7,7 @@ export default function NotFound() {
       <h2 className="text-3xl font-semibold mb-3">Page Not Found</h2>
       <Link
         href="/products"
-        className="text-secondary hover:underline text-lg"
+        className="text-foreground underline underline-offset-4 decoration-cta hover:text-primary text-lg"
       >
         Go back to Products
       </Link>

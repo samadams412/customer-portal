@@ -102,8 +102,8 @@ export default function AuthPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
-      <div className="w-full max-w-md space-y-6 bg-card p-8 rounded-lg shadow-xl">
-        <h1 className="text-3xl font-bold text-center">
+      <div className="w-full max-w-md space-y-6 bg-card text-card-foreground p-8 rounded-lg shadow-xl">
+        <h1 className="font-heading text-3xl font-semibold text-center">
           {isLogin ? 'Login to Your Account' : 'Register for an Account'}
         </h1>
 
@@ -135,7 +135,7 @@ export default function AuthPage() {
 
           {error && <p className="text-destructive text-sm text-center">{error}</p>}
 
-          <Button type="submit" className="w-full" variant="secondary">
+          <Button type="submit" className="w-full" variant="cta">
             {isLogin ? 'Sign In' : 'Register'}
           </Button>
         </form>
@@ -148,7 +148,7 @@ export default function AuthPage() {
               setIsLogin(!isLogin);
               setError('');
             }}
-            className="font-medium underline underline-offset-4 hover:text-primary"
+            className="font-medium underline underline-offset-4 hover:text-cta cursor-pointer"
           >
             {isLogin ? 'Sign up here' : 'Sign in here'}
           </button>

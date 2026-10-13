@@ -125,104 +125,104 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6 text-center text-red-500 min-h-screen flex flex-col items-center justify-center">
+      <div className="container mx-auto p-6 text-center text-destructive min-h-screen flex flex-col items-center justify-center">
         <p>Error: {error}</p>
-        <Button onClick={() => router.push('/dashboard')} className="mt-4">Back to Dashboard</Button>
+        <Button onClick={() => router.push('/dashboard')} variant="cta" className="mt-4">Back to Dashboard</Button>
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="container mx-auto p-6 text-center text-gray-500 min-h-screen flex flex-col items-center justify-center">
+      <div className="container mx-auto p-6 text-center text-muted-foreground min-h-screen flex flex-col items-center justify-center">
         <p>Order data could not be loaded or found.</p>
-        <Button onClick={() => router.push('/dashboard')} className="mt-4">Back to Dashboard</Button>
+        <Button onClick={() => router.push('/dashboard')} variant="cta" className="mt-4">Back to Dashboard</Button>
       </div>
     );
   }
 
   const discountTotal = order.discountCode
-  ? (order.subtotalAmount - (order.subtotalAmount * order.discountCode.percentage) / 100).toFixed(2)
-  : order.subtotalAmount.toFixed(2);
-
+    ? (order.subtotalAmount - (order.subtotalAmount * order.discountCode.percentage) / 100).toFixed(2)
+    : order.subtotalAmount.toFixed(2);
 
   // --- Render Order Details ---
   return (
     <main className="container mx-auto p-6 space-y-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">Order Details</h1>
-        <Button onClick={() => router.push('/dashboard')} variant="outline" className="text-gray-800 dark:text-gray-200">
+        <h1 className="font-heading text-3xl font-semibold">Order Details</h1>
+        <Button onClick={() => router.push('/dashboard')} variant="outline">
           Back to Dashboard
         </Button>
       </div>
 
-      <Card className="shadow-xl bg-accent p-6">
+      <Card className="shadow-xl p-6">
         <CardHeader className="px-0 pt-0 pb-4">
-          <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-gray-50">
+          <CardTitle className="font-heading text-2xl font-semibold">
             Order #{order.id}
           </CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-400">
+          <CardDescription className="text-muted-foreground">
             Placed on: {new Date(order.orderDate).toLocaleString()}
           </CardDescription>
         </CardHeader>
         <CardContent className="px-0 pb-0 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Subtotal: ${order.subtotalAmount.toFixed(2)}</p>
+              <p className="text-lg font-medium">Subtotal: ${order.subtotalAmount.toFixed(2)}</p>
               {order.discountCode && (
-                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                <p className="text-lg font-medium">
                   Discount Code: {order.discountCode.code} ({order.discountCode.percentage}%)
                 </p>
               )}
                 {order.discountCode && (
-                  <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                  <p className="text-lg font-medium">
                     Discount: -${((order.subtotalAmount * order.discountCode.percentage) / 100).toFixed(2)}
                   </p>
                 )}
               {order.discountCode && (
-                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Discount Subtotal: ${discountTotal}</p>
+                <p className="text-lg font-medium">Discount Subtotal: ${discountTotal}</p>
               )}
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">Tax: ${order.taxAmount.toFixed(2)}</p>
+              <p className="text-lg font-medium">Tax: ${order.taxAmount.toFixed(2)}</p>
 
-              <p className="text-xl font-bold text-blue-600 dark:text-blue-400 mt-2">Total: ${order.totalAmount.toFixed(2)}</p>
+              <p className="text-xl font-bold text-cta mt-2">Total: ${order.totalAmount.toFixed(2)}</p>
             </div>
             <div>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+              <p className="text-lg font-medium">
                 Delivery Type: <Badge variant="secondary" className="ml-2">{order.deliveryType}</Badge>
               </p>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200 mt-2">
+              <p className="text-lg font-medium mt-2">
                 Status: <Badge className={`ml-2 ${
-                    order.status === 'DELIVERED' ? 'bg-green-500' :
-                    order.status === 'SHIPPED' ? 'bg-yellow-500' :
-                    order.status === 'PROCESSING' ? 'bg-blue-500' :
-                    'bg-gray-500' // PENDING or CANCELLED
+                    order.status === 'DELIVERED' ? 'bg-success text-success-foreground' :
+                    order.status === 'SHIPPED' ? 'bg-cta text-cta-foreground' :
+                    order.status === 'PROCESSING' ? 'bg-primary text-primary-foreground' :
+                    order.status === 'CANCELLED' ? 'bg-destructive text-destructive-foreground' :
+                    'bg-muted text-muted-foreground' // PENDING
                   }`}>{order.status}</Badge>
               </p>
             </div>
           </div>
 
-          <h3 className="text-xl font-semibold mt-6 mb-3 text-gray-900 dark:text-gray-50">Order Items:</h3>
+          <h3 className="font-heading text-xl font-semibold mt-6 mb-3">Order Items:</h3>
           <div className="space-y-3">
             {order.orderItems.length > 0 ? (
               order.orderItems.map((item: OrderItem) => (
-                <div key={item.id} className="flex justify-between items-center border-b pb-2 last:border-b-0 last:pb-0">
-                  <p className="text-gray-700 dark:text-gray-300">
+                <div key={item.id} className="flex justify-between items-center border-b border-border pb-2 last:border-b-0 last:pb-0">
+                  <p className="text-muted-foreground">
                     {item.quantity} x {item.product.name}
                   </p>
-                  <p className="font-semibold text-gray-800 dark:text-gray-200">
+                  <p className="font-semibold">
                     ${(item.quantity * item.priceAtPurchase).toFixed(2)}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-gray-600 dark:text-gray-400">No items found for this order.</p>
+              <p className="text-muted-foreground">No items found for this order.</p>
             )}
           </div>
 
           {order.deliveryType === 'DELIVERY' && order.shippingAddress && (
-            <div className="mt-6 border-t pt-4">
-              <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-50">Shipping Address:</h3>
-              <address className="not-italic text-gray-700 dark:text-gray-300">
+            <div className="mt-6 border-t border-border pt-4">
+              <h3 className="font-heading text-xl font-semibold mb-3">Shipping Address:</h3>
+              <address className="not-italic text-muted-foreground">
                 <p>{order.shippingAddress.street}</p>
                 <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
               </address>

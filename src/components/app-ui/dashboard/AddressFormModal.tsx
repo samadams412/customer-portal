@@ -108,7 +108,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
       if (!open) onClose(); // Only close if user initiates closing
       form.reset(); // Reset form state when dialog closes
     }}>
-      <DialogContent className="sm:max-w-[425px] bg-primary-foreground text-gray-900 dark:text-gray-50">
+      <DialogContent className="sm:max-w-[425px] bg-card text-card-foreground">
         <DialogHeader>
           <DialogTitle>{addressToEdit ? "Edit Address" : "Add New Address"}</DialogTitle>
           <DialogDescription>
@@ -124,7 +124,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>Street</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main St" {...field} className="bg-primary-foreground dark:border-gray-600"/>
+                    <Input placeholder="123 Main St" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,7 +137,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input placeholder="Anytown" {...field} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="Anytown" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -150,7 +150,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>State (2-letter code)</FormLabel>
                   <FormControl>
-                    <Input placeholder="TX" {...field} maxLength={2} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="TX" {...field} maxLength={2} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -163,7 +163,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                 <FormItem>
                   <FormLabel>Zip Code</FormLabel>
                   <FormControl>
-                    <Input placeholder="90210" {...field} className="bg-primary-foreground dark:text-gray-50 dark:border-gray-600"/>
+                    <Input placeholder="90210" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,7 +173,7 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
               control={form.control}
               name="isDefault"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow bg-primary-foreground dark:border-gray-600">
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-border p-4 shadow">
                   <FormControl>
                     {/* Checkbox component needs to be imported or custom built */}
                     {/* For simplicity, using a native input type checkbox here */}
@@ -181,12 +181,12 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
                       type="checkbox"
                       checked={field.value}
                       onChange={field.onChange}
-                      className="mt-1 bg-primary-foreground dark:border-gray-500"
+                      className="mt-1"
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Set as Default Address</FormLabel>
-                    <DialogDescription className="text-sm text-muted-foreground dark:text-gray-400">
+                    <DialogDescription className="text-sm text-muted-foreground">
                       Setting this as default will unmark any other default addresses.
                     </DialogDescription>
                   </div>
@@ -194,13 +194,13 @@ export function AddressFormModal({ isOpen, onClose, addressToEdit }: AddressForm
               )}
             />
             {form.formState.errors.root?.serverError && (
-              <p className="text-red-500 text-sm mt-2">
+              <p className="text-destructive text-sm mt-2">
                 {form.formState.errors.root.serverError.message}
               </p>
             )}
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting || status !== 'authenticated'}
-                      className="bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-600">
+                      variant="cta">
                 {form.formState.isSubmitting ? "Saving..." : (addressToEdit ? "Save Changes" : "Add Address")}
               </Button>
             </DialogFooter>

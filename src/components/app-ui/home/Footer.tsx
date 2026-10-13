@@ -5,14 +5,14 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-secondary text-secondary-foreground py-10 px-6">
+    <footer className="bg-foreground text-background dark:bg-card dark:text-card-foreground py-14 px-6">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         
         {/* Logo & About */}
         <div>
-          <h2 className="text-2xl font-bold mb-2">Grocery Portal</h2>
-          <p className="text-sm">
-            Your trusted source for fresh produce and everyday essentials. Fast, sustainable, and local.
+          <h2 className="text-2xl font-semibold mb-2">Home Portal</h2>
+          <p className="text-sm opacity-75">
+            Your trusted source for furniture, decor, and kitchen essentials. Fast, sustainable, and local.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function Footer() {
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              <span>support@groceryportal.com</span>
+              <span>support@homeportal.com</span>
             </li>
             <li className="flex items-center gap-2">
               <Phone className="w-4 h-4" />
@@ -58,8 +58,8 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-secondary-foreground/20 mt-10 pt-6 text-center text-sm">
-        &copy; {new Date().getFullYear()} Grocery Portal. All rights reserved.
+      <div className="border-t border-current/20 opacity-75 mt-10 pt-6 text-center text-sm">
+        &copy; {new Date().getFullYear()} Home Portal. All rights reserved.
       </div>
     </footer>
   );

@@ -13,27 +13,37 @@ export async function GET(req: NextRequest) {
   // Validate sortBy
   const validSortBy = sortByParam === "price" || sortByParam === "inStock" ? sortByParam : null;
 
-  try {
-    const products = await prisma.product.findMany({
-      where: {
-        name: {
-          contains: search,
-          mode: "insensitive",
-        },
-        ...(category && {
-          category: {
-            equals: category,
-          },
-        }),
-      },
-      orderBy: validSortBy
-        ? {
-            [validSortBy]: sortOrder,
-          }
-        : undefined,
-    });
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const pageSize = Math.min(100, Math.max(1, Number(searchParams.get("pageSize")) || 20));
 
-    return NextResponse.json(products);
+  const where = {
+    name: {
+      contains: search,
+      mode: "insensitive" as const,
+    },
+    ...(category && {
+      category: {
+        equals: category,
+      },
+    }),
+  };
+
+  try {
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy: validSortBy
+          ? {
+              [validSortBy]: sortOrder,
+            }
+          : undefined,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    return NextResponse.json({ products, total, page, pageSize });
   } catch (error) {
     console.error("GET /api/products error:", error);
     return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
